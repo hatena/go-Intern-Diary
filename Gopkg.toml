@@ -17,5 +17,9 @@ required = ["github.com/jessevdk/go-assets"]
   revision = "e698b6abc17ead17ea89d3d22a4b2625299701e3"
 
 [[constraint]]
+  name = "golang.org/x/crypto"
+  branch = "master"
+  
+[[constraint]]
   name = "github.com/jessevdk/go-assets"
   revision = "4f4301a06e153ff90e17793577ab6bf79f8dc5c5"
