@@ -74,6 +74,8 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/signin", s.willSigninHandler())
 	handle("POST", "/signin", s.signinHandler())
 
+	handle("GET", "/diaries", s.diariesHandler())
+
 	return router
 }
 
@@ -142,11 +144,10 @@ func (s *server) signupHandler() http.Handler {
 			Value:   token,
 			Expires: expiresAt,
 		})
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
 	})
 }
 
-// DB内のセッショントークンは消す必要ないのかな
 func (s *server) signoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
@@ -187,6 +188,27 @@ func (s *server) signinHandler() http.Handler {
 			Value:   token,
 			Expires: expiresAt,
 		})
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
+	})
+}
+
+func (s *server) diariesHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		var limit uint64 = 100 // todo
+		var offset uint64 = 1
+		diaries, err := s.app.ListDiariesByUserID(user.ID, limit, offset)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		s.renderTemplate(w, r, "diaries.tmpl", map[string]interface{}{
+			"User":    user,
+			"Diaries": diaries,
+		})
 	})
 }
