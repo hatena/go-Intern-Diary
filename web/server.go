@@ -10,6 +10,7 @@ import (
 	"github.com/dimfeld/httptreemux"
 	"github.com/justinas/nosurf"
 
+	"github.com/hatena/go-Intern-Diary/model"
 	"github.com/hatena/go-Intern-Diary/service"
 )
 
@@ -77,6 +78,14 @@ var csrfToken = func(r *http.Request) string {
 	return nosurf.Token(r)
 }
 
+func (s *server) findUser(r *http.Request) (user *model.User) {
+	cookie, err := r.Cookie(sessionKey)
+	if err == nil && cookie.Value != "" {
+		user, _ = s.app.FindUserByToken(cookie.Value)
+	}
+	return
+}
+
 func (s *server) renderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, data map[string]interface{}) {
 	if data == nil {
 		data = make(map[string]interface{})
@@ -90,6 +99,9 @@ func (s *server) renderTemplate(w http.ResponseWriter, r *http.Request, tmpl str
 
 func (s *server) indexHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		user := s.findUser(r)
+		s.renderTemplate(w, r, "index.tmpl", map[string]interface{}{
+			"User": user,
+		})
 	})
 }
