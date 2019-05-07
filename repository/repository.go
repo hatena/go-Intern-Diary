@@ -18,11 +18,14 @@ type Repository interface {
 	CreateNewToken(userID uint64, token string, expiresAt time.Time) error
 	FindUserByToken(token string) (*model.User, error)
 
+	CreateNewDiary(userID uint64, name string) (*model.Diary, error)
+	ListDiariesByUserID(userID, limit, offset uint64) ([]*model.Diary, error)
+
 	Close() error
 }
 
 func New(dsn string) (Repository, error) {
-	db, err := sqlx.Open("mysql", dsn)
+	db, err := sqlx.Open("mysql", dsn+"?parseTime=true&loc=Asia%2FTokyo")
 	if err != nil {
 		return nil, fmt.Errorf("Opening mysql failed: %v", err)
 	}

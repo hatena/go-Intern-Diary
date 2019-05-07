@@ -1,0 +1,27 @@
+{{define "title"}}ダイアリー一覧{{end}}
+
+{{define "body"}}
+<h1>{{.User.Name}}のマイダイアリー</h1>
+
+ユーザー名: {{.User.Name}}
+<form action="/signout" method="POST">
+    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+    <input type="submit" value="ログアウト"/>
+</form>
+
+<div>
+    <a href="/diaries/new">ダイアリーを追加</a>
+</div>
+
+{{range .Diaries}}
+<div>
+    <a href="/diaries/{{.Diary.ID}}/articles">{{.Diary.Title}} {{.Diary.UpdatedAt}}</a>
+    <form action="/diaries/{{.Diary.ID}}/delete" method="POST">
+        <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+        <input type="submit" value="消去"/>
+    </form>
+</div>
+
+{{end}}
+
+{{end}}
