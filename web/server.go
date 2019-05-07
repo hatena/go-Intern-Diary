@@ -70,6 +70,8 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/signup", s.willSignupHandler())
 	handle("POST", "/signup", s.signupHandler())
 
+	handle("POST", "/signout", s.signoutHandler())
+
 	return router
 }
 
@@ -137,6 +139,18 @@ func (s *server) signupHandler() http.Handler {
 			Name:    sessionKey,
 			Value:   token,
 			Expires: expiresAt,
+		})
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+}
+
+// DB内のセッショントークンは消す必要ないのかな
+func (s *server) signoutHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:    sessionKey,
+			Value:   "",
+			Expires: time.Unix(0, 0),
 		})
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
