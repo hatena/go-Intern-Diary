@@ -6,6 +6,7 @@ schema {
 type Query {
     visitor(): User!
     getUser(userId: ID!): User!
+    getDiaries(userId: ID!): [Diary]!
 }
 
 # type Mutation {
@@ -14,13 +15,13 @@ type Query {
 type User {
     id: ID!
     name: String!
-    diaries: [Diary!]!
+    diaries: [Diary]!
 }
 
 type Diary {
     id: ID!
     name: String!
-    articles: [Article!]!
+    articles: [Article]!
 }
 
 type Article {

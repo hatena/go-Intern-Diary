@@ -12,6 +12,7 @@ import (
 type Resolver interface {
 	Visitor(context.Context) (*userResolver, error)
 	GetUser(context.Context, struct{ UserID string }) (*userResolver, error)
+	GetDiaries(context.Context, struct{ UserID string }) ([]*diaryResolver, error)
 }
 
 func newResolver(app service.DiaryApp) Resolver {
@@ -43,4 +44,22 @@ func (r *resolver) GetUser(ctx context.Context, args struct{ UserID string }) (*
 		return nil, errors.New("user not found")
 	}
 	return &userResolver{user, r.app}, nil
+}
+
+func (r *resolver) GetDiaries(ctx context.Context, args struct{ UserID string }) ([]*diaryResolver, error) {
+	userID, err := strconv.ParseUint(args.UserID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	page := uint64(1)
+	limit := uint64(100)
+	diaries, err := r.app.ListDiariesByUserID(userID, page, limit)
+	if err != nil {
+		return nil, err
+	}
+	diaryResolvers := make([]*diaryResolver, len(diaries))
+	for i, diary := range diaries {
+		diaryResolvers[i] = &diaryResolver{diary, r.app}
+	}
+	return diaryResolvers, nil
 }
