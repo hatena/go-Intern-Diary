@@ -35,7 +35,8 @@ CREATE TABLE diary (
     `created_at` DATETIME(6) NOT NULL,
     `updated_at` DATETIME(6) NOT NULL,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    KEY(updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE article (
@@ -48,5 +49,6 @@ CREATE TABLE article (
     `created_at` DATETIME(6) NOT NULL,
     `updated_at` DATETIME(6) NOT NULL,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    KEY(updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

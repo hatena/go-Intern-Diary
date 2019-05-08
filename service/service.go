@@ -28,6 +28,7 @@ type DiaryApp interface {
 	FindDiaryByID(diaryID, userID uint64) (*model.Diary, error)
 	CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error)
 	FindArticleByID(articleID, diaryID uint64) (*model.Article, error)
+	DeleteArticle(articleID, diaryID uint64) error
 
 	Close() error
 }

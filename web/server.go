@@ -85,6 +85,7 @@ func (s *server) Handler() http.Handler {
 	handle("POST", "/diaries/:id/articles/new", s.addArticleHandler())
 	handle("POST", "/diaries/:id/delete", s.deleteDiaryHandler())
 	handle("GET", "/diaries/:diary_id/articles/:article_id", s.articleHandler())
+	handle("POST", "/diaries/:diary_id/articles/:article_id/delete", s.deleteArticleHandler())
 
 	return router
 }
@@ -361,6 +362,10 @@ func (s *server) articleHandler() http.Handler {
 			return
 		}
 		diaryID, err := strconv.ParseUint(s.getParams(r, "diary_id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
 		articleID, err := strconv.ParseUint(s.getParams(r, "article_id"), 10, 64)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
@@ -381,5 +386,30 @@ func (s *server) articleHandler() http.Handler {
 			"Diary":   diary,
 			"Article": article,
 		})
+	})
+}
+
+func (s *server) deleteArticleHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Error(w, "please login", http.StatusBadRequest)
+			return
+		}
+		diaryID, err := strconv.ParseUint(s.getParams(r, "diary_id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		articleID, err := strconv.ParseUint(s.getParams(r, "article_id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		if err := s.app.DeleteArticle(articleID, diaryID); err != nil {
+			http.Error(w, fmt.Sprintf("failed to delete diary: %+v", err), http.StatusBadRequest)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/diaries/%d/articles", diaryID), http.StatusSeeOther)
 	})
 }

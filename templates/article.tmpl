@@ -1,7 +1,7 @@
 {{define "title"}}記事{{end}}
 
 {{define "body"}}
-<h1><a href="/diaries">{{.User.Name}}</a>さんの{{.Diary.Name}}</h1>
+<h1><a href="/diaries">{{.User.Name}}</a>さんの<a href="/diaries/{{.Diary.ID}}/articles">{{.Diary.Name}}</a></h1>
 
 タイトル: <br>
 <div>

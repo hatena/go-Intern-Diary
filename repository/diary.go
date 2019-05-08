@@ -40,8 +40,17 @@ func (r *repository) ListDiariesByUserID(userID uint64, limit, offset uint64) ([
 
 func (r *repository) DeleteDiary(userID, diaryID uint64) (err error) {
 	_, err = r.db.Exec(
-		`DELETE FROM diary WHERE user_id = ? AND id = ?`,
+		`DELETE FROM diary
+			WHERE user_id = ? AND id = ?`,
 		userID, diaryID,
+	)
+	if err != nil {
+		return
+	}
+	_, err = r.db.Exec(
+		`DELETE FROM article
+			WHERE diary_id = ?`,
+		diaryID,
 	)
 	return
 }

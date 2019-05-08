@@ -53,3 +53,12 @@ func (r *repository) FindArticleByID(articleID, diaryID uint64) (*model.Article,
 	}
 	return &article, nil
 }
+
+func (r *repository) DeleteArticle(articleID, diaryID uint64) (err error) {
+	_, err = r.db.Exec(
+		`DELETE FROM article
+			WHERE id = ? AND diary_id = ?`,
+		articleID, diaryID,
+	)
+	return
+}
