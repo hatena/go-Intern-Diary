@@ -3,9 +3,11 @@ package web
 //go:generate go-assets-builder --package=web --output=./templates-gen.go --strip-prefix="/templates/" --variable=Templates ../templates
 
 import (
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/dimfeld/httptreemux"
@@ -77,6 +79,7 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/diaries", s.diariesHandler())
 	handle("GET", "/diaries/new", s.willAddDiaryHandler())
 	handle("POST", "/diaries/new", s.addDiaryHandler())
+	handle("POST", "/diaries/:id/delete", s.deleteDiaryHandler())
 
 	return router
 }
@@ -106,6 +109,10 @@ func (s *server) renderTemplate(w http.ResponseWriter, r *http.Request, tmpl str
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (s *server) getParams(r *http.Request, name string) string {
+	return httptreemux.ContextParams(r.Context())[name]
 }
 
 func (s *server) indexHandler() http.Handler {
@@ -208,9 +215,7 @@ func (s *server) diariesHandler() http.Handler {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		debug := len(diaries)
 		s.renderTemplate(w, r, "diaries.tmpl", map[string]interface{}{
-			"Debug":   debug,
 			"User":    user,
 			"Diaries": diaries,
 		})
@@ -240,6 +245,26 @@ func (s *server) addDiaryHandler() http.Handler {
 		name := r.FormValue("name")
 		if _, err := s.app.CreateNewDiary(user.ID, name); err != nil {
 			http.Error(w, "failed to create diary", http.StatusBadRequest)
+			return
+		}
+		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
+	})
+}
+
+func (s *server) deleteDiaryHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Error(w, "please login", http.StatusBadRequest)
+			return
+		}
+		diaryID, err := strconv.ParseUint(s.getParams(r, "id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		if err := s.app.DeleteDiary(user.ID, diaryID); err != nil {
+			http.Error(w, fmt.Sprintf("failed to delete diary: %+v", err), http.StatusBadRequest)
 			return
 		}
 		http.Redirect(w, r, "/diaries", http.StatusSeeOther)

@@ -12,10 +12,6 @@
     <a href="/diaries/new">ダイアリーを追加</a>
 </div>
 
-<div>
-    {{.Debug}}
-</div>
-
 {{range .Diaries}}
 <div>
     <a href="/diaries/{{.ID}}/articles">{{.Name}}</a> {{.UpdatedAt}}

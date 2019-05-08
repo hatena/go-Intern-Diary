@@ -16,3 +16,7 @@ func (app *diaryApp) ListDiariesByUserID(userID, page, limit uint64) ([]*model.D
 	}
 	return app.repo.ListDiariesByUserID(userID, limit, (page-1)*limit)
 }
+
+func (app *diaryApp) DeleteDiary(userID, diaryID uint64) error {
+	return app.repo.DeleteDiary(userID, diaryID)
+}

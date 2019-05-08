@@ -20,6 +20,7 @@ type Repository interface {
 
 	CreateNewDiary(userID uint64, name string) (*model.Diary, error)
 	ListDiariesByUserID(userID, limit, offset uint64) ([]*model.Diary, error)
+	DeleteDiary(userID, diaryID uint64) error
 
 	Close() error
 }
