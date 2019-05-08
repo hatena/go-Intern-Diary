@@ -75,6 +75,8 @@ func (s *server) Handler() http.Handler {
 	handle("POST", "/signin", s.signinHandler())
 
 	handle("GET", "/diaries", s.diariesHandler())
+	handle("GET", "/diaries/new", s.willAddDiaryHandler())
+	handle("POST", "/diaries/new", s.addDiaryHandler())
 
 	return router
 }
@@ -199,16 +201,47 @@ func (s *server) diariesHandler() http.Handler {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
+		var page uint64 = 1
 		var limit uint64 = 100 // todo
-		var offset uint64 = 1
-		diaries, err := s.app.ListDiariesByUserID(user.ID, limit, offset)
+		diaries, err := s.app.ListDiariesByUserID(user.ID, page, limit)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		debug := len(diaries)
 		s.renderTemplate(w, r, "diaries.tmpl", map[string]interface{}{
+			"Debug":   debug,
 			"User":    user,
 			"Diaries": diaries,
 		})
+	})
+}
+
+func (s *server) willAddDiaryHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+		s.renderTemplate(w, r, "add_diary.tmpl", map[string]interface{}{
+			"User": user,
+		})
+	})
+}
+
+func (s *server) addDiaryHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Error(w, "please login", http.StatusBadRequest)
+			return
+		}
+		name := r.FormValue("name")
+		if _, err := s.app.CreateNewDiary(user.ID, name); err != nil {
+			http.Error(w, "failed to create diary", http.StatusBadRequest)
+			return
+		}
+		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
 	})
 }

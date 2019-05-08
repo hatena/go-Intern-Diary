@@ -5,6 +5,9 @@
 
 {{if .User}}
     ユーザー名: {{.User.Name}}
+    <div>
+        <a href="/diaries">{{.User.Name}}さんのダイアリー一覧</a>
+    </div>
     <form action="/signout"  method="POST">
         <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
         <input type="submit" value="ログアウト"/>
