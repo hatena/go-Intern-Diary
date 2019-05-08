@@ -1,0 +1,16 @@
+{{define "title"}}記事追加{{end}}
+
+{{define "body"}}
+<h1>{{.User.Name}}さんの{{.Diary.Name}}</h1>
+
+<form action="/diaries/{{.Diary.ID}}/articles/new" method="POST">
+    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+    <div>タイトル:<br> 
+        <input type="TEXT" name="title"><br>
+    </div>
+    <div>内容:<br>
+        <textarea name="content"></textarea><br>
+    </div>
+    <input type="submit" value="新規作成"/>
+</form>
+{{end}}

@@ -9,11 +9,12 @@
 {{range .Articles}}
     <li>
         <div>
-            <a href="/diaries/{{.Diary.ID}}/articles/{{.ID}}">{{.Title}}</a>{{.UpdatedAt}}
-                <form action="/diaries/{{.Diary.ID}}/articles/{{.ID}}/delete" method="POST">
-                    <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
-                    <input type="submit" value="消去"/>
-                </form>
+            <a href="/diaries/{{$.Diary.ID}}/articles/{{.ID}}">{{.Title}}</a><br>
+            {{.UpdatedAt}}
+            <form action="/diaries/{{$.Diary.ID}}/articles/{{.ID}}/delete" method="POST">
+                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                <input type="submit" value="消去"/>
+            </form>
         </div>
     </li>
 {{end}}

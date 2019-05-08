@@ -12,3 +12,7 @@ func (app *diaryApp) ListArticlesByDiaryID(diaryID, page, limit uint64) ([]*mode
 	}
 	return app.repo.ListArticlesByDiaryID(diaryID, limit, (page-1)*limit)
 }
+
+func (app *diaryApp) CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error) {
+	return app.repo.CreateNewArticle(diaryID, title, content)
+}
