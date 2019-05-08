@@ -4,7 +4,27 @@ schema {
 }
 
 type Query {
+    visitor(): User!
+    getUser(userId: ID!): User!
 }
 
 type Mutation {
+}
+
+type User {
+    id: ID!
+    name: String!
+    diaries: [Diary!]!
+}
+
+type Diary {
+    id: ID!
+    name: String!
+    articles: [Article!]!
+}
+
+type Article {
+    id: ID!
+    title: String!
+    content: String!
 }

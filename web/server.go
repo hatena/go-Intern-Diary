@@ -3,6 +3,7 @@ package web
 //go:generate go-assets-builder --package=web --output=./templates-gen.go --strip-prefix="/templates/" --variable=Templates ../templates
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -14,6 +15,7 @@ import (
 	"github.com/justinas/nosurf"
 
 	"github.com/hatena/go-Intern-Diary/model"
+	"github.com/hatena/go-Intern-Diary/resolver"
 	"github.com/hatena/go-Intern-Diary/service"
 )
 
@@ -87,6 +89,13 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/diaries/:diary_id/articles/:article_id", s.articleHandler())
 	handle("POST", "/diaries/:diary_id/articles/:article_id/delete", s.deleteArticleHandler())
 
+	handle("GET", "/graphiql", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templates["graphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
+	}))
+
+	router.UsingContext().Handler("POST", "/query",
+		s.resolveUserMiddleware(loggingMiddleware(headerMiddleware(resolver.NewHandler(s.app)))))
+
 	return router
 }
 
@@ -104,6 +113,13 @@ func (s *server) findUser(r *http.Request) (user *model.User) {
 		user, _ = s.app.FindUserByToken(cookie.Value)
 	}
 	return
+}
+
+func (s *server) resolveUserMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", user)))
+	})
 }
 
 func (s *server) renderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, data map[string]interface{}) {
