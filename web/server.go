@@ -79,6 +79,9 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/diaries", s.diariesHandler())
 	handle("GET", "/diaries/new", s.willAddDiaryHandler())
 	handle("POST", "/diaries/new", s.addDiaryHandler())
+
+	handle("GET", "/diaries/:id/articles", s.articlesHandler())
+	// handle("POST", "/diaries/:id/new", s.addArticleHandler())
 	handle("POST", "/diaries/:id/delete", s.deleteDiaryHandler())
 
 	return router
@@ -268,5 +271,37 @@ func (s *server) deleteDiaryHandler() http.Handler {
 			return
 		}
 		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
+	})
+}
+
+func (s *server) articlesHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Error(w, "please login", http.StatusBadRequest)
+			return
+		}
+		diaryID, err := strconv.ParseUint(s.getParams(r, "id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		diary, err := s.app.FindDiaryByID(diaryID)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		var page uint64 = 1
+		var limit uint64 = 100 // todo
+		articles, err := s.app.ListArticlesByDiaryID(diaryID, page, limit)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		s.renderTemplate(w, r, "articles.tmpl", map[string]interface{}{
+			"User":     user,
+			"Diary":    diary,
+			"Articles": articles,
+		})
 	})
 }

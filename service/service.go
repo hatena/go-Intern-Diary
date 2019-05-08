@@ -24,6 +24,8 @@ type DiaryApp interface {
 	CreateNewDiary(userID uint64, name string) (*model.Diary, error)
 	ListDiariesByUserID(userID, page, limit uint64) ([]*model.Diary, error)
 	DeleteDiary(userID, diaryID uint64) error
+	ListArticlesByDiaryID(diaryID, page, limit uint64) ([]*model.Article, error)
+	FindDiaryByID(diaryID uint64) (*model.Diary, error)
 
 	Close() error
 }

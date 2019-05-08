@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/hatena/go-Intern-Diary/model"
@@ -43,4 +44,21 @@ func (r *repository) DeleteDiary(userID, diaryID uint64) (err error) {
 		userID, diaryID,
 	)
 	return
+}
+
+func (r *repository) FindDiaryByID(diaryID uint64) (*model.Diary, error) {
+	var diary model.Diary
+	err := r.db.Get(
+		&diary,
+		`SELECT id, name FROM diary
+			WHERE id = ? LIMIT 1`,
+		diaryID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, userNotFoundError
+		}
+		return nil, err
+	}
+	return &diary, nil
 }
