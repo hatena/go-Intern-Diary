@@ -1,7 +1,7 @@
 {{define "title"}}記事一覧{{end}}
 
 {{define "body"}}
-<h1>{{.User.Name}}さんの{{.Diary.Name}}</h1>
+<h1><a href="/diaries">{{.User.Name}}</a>さんの{{.Diary.Name}}</h1>
 <div>
     <a href="/diaries/{{.Diary.ID}}/articles/new">記事を追加する</a>
 </div>

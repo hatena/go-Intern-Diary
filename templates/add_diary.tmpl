@@ -1,7 +1,7 @@
 {{define "title"}}ダイアリー追加{{end}}
 
 {{define "body"}}
-<h1>{{.User.Name}}さんのダイアリー</h1>
+<h1><a href="/diaries">{{.User.Name}}</a>さん</h1>
 
 <form action="/diaries/new" method="POST">
     <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">

@@ -1,10 +1,13 @@
 package repository
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/hatena/go-Intern-Diary/model"
 )
+
+var articleNotFoundError = model.NotFoundError("article")
 
 func (r *repository) ListArticlesByDiaryID(diaryID, limit, offset uint64) ([]*model.Article, error) {
 	articles := make([]*model.Article, 0, limit)
@@ -33,4 +36,20 @@ func (r *repository) CreateNewArticle(diaryID uint64, title string, content stri
 		return nil, err
 	}
 	return &model.Article{ID: id, Title: title, DiaryID: diaryID, UpdatedAt: now}, nil
+}
+
+func (r *repository) FindArticleByID(articleID, diaryID uint64) (*model.Article, error) {
+	var article model.Article
+	err := r.db.Get(&article,
+		`SELECT id, title, content, diary_id, updated_at FROM article
+			WHERE id = ? AND diary_id = ? LIMIT 1`,
+		articleID, diaryID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, articleNotFoundError
+		}
+		return nil, err
+	}
+	return &article, nil
 }

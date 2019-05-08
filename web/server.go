@@ -84,6 +84,7 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/diaries/:id/articles/new", s.willAddArticleHandler())
 	handle("POST", "/diaries/:id/articles/new", s.addArticleHandler())
 	handle("POST", "/diaries/:id/delete", s.deleteDiaryHandler())
+	handle("GET", "/diaries/:diary_id/articles/:article_id", s.articleHandler())
 
 	return router
 }
@@ -287,7 +288,7 @@ func (s *server) articlesHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		diary, err := s.app.FindDiaryByID(diaryID)
+		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
@@ -319,7 +320,7 @@ func (s *server) willAddArticleHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		diary, err := s.app.FindDiaryByID(diaryID)
+		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
@@ -349,5 +350,36 @@ func (s *server) addArticleHandler() http.Handler {
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/diaries/%d/articles", diaryID), http.StatusSeeOther)
+	})
+}
+
+func (s *server) articleHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		if user == nil {
+			http.Error(w, "please login", http.StatusBadRequest)
+			return
+		}
+		diaryID, err := strconv.ParseUint(s.getParams(r, "diary_id"), 10, 64)
+		articleID, err := strconv.ParseUint(s.getParams(r, "article_id"), 10, 64)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		article, err := s.app.FindArticleByID(articleID, diaryID)
+		if err != nil {
+			http.Error(w, "invalid diary id", http.StatusBadRequest)
+			return
+		}
+		s.renderTemplate(w, r, "article.tmpl", map[string]interface{}{
+			"User":    user,
+			"Diary":   diary,
+			"Article": article,
+		})
 	})
 }
