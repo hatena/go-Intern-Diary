@@ -1,6 +1,6 @@
 schema {
     query: Query
-    mutation: Mutation
+    # mutation: Mutation
 }
 
 type Query {
@@ -8,8 +8,8 @@ type Query {
     getUser(userId: ID!): User!
 }
 
-type Mutation {
-}
+# type Mutation {
+# }
 
 type User {
     id: ID!
