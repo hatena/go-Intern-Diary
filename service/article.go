@@ -32,3 +32,7 @@ func (app *diaryApp) ListArticlesByIDs(articleIDs []uint64) ([]*model.Article, e
 func (app *diaryApp) ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.Article, error) {
 	return app.repo.ListArticlesByDiaryIDs(diaryIDs)
 }
+
+func (app *diaryApp) UpdateArticle(articleID uint64, title, content string) (*model.Article, error) {
+	return app.repo.UpdateArticle(articleID, title, content)
+}

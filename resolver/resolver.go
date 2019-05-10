@@ -16,7 +16,7 @@ type Resolver interface {
 	CreateDiary(context.Context, struct{ Name string }) (*diaryResolver, error)
 	DeleteDiary(context.Context, struct{ DiaryID string }) (bool, error)
 	PostArticle(context.Context, struct{ DiaryID, Title, Content string }) (*articleResolver, error)
-	// UpdateArticle(context.Context, struct{ ArticleID, Title, Content string }) (*articleResolver, error)
+	UpdateArticle(context.Context, struct{ ArticleID, Title, Content string }) (*articleResolver, error)
 	DeleteArticle(context.Context, struct{ ArticleID, DiaryID string }) (bool, error)
 }
 
@@ -129,4 +129,20 @@ func (r *resolver) DeleteArticle(ctx context.Context, args struct{ ArticleID, Di
 		return false, err
 	}
 	return true, nil
+}
+
+func (r *resolver) UpdateArticle(ctx context.Context, args struct{ ArticleID, Title, Content string }) (*articleResolver, error) {
+	user := currentUser(ctx)
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+	articleID, err := strconv.ParseUint(args.ArticleID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	article, err := r.app.UpdateArticle(articleID, args.Title, args.Content)
+	if err != nil {
+		return nil, err
+	}
+	return &articleResolver{article: article}, nil
 }

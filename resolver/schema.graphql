@@ -13,7 +13,7 @@ type Mutation {
     createDiary(name: String!): Diary!
     deleteDiary(diaryId: ID!): Boolean!
     postArticle(diaryId: ID!, title: String!, content: String!): Article!
-    # updateArticle(articleId: ID!, title: String!, content: String!) : Article!
+    updateArticle(articleId: ID!, title: String!, content: String!) : Article!
     deleteArticle(articleId: ID!): Boolean! 
 }
 

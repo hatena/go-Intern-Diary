@@ -36,7 +36,7 @@ func (r *repository) CreateNewArticle(diaryID uint64, title string, content stri
 	if err != nil {
 		return nil, err
 	}
-	return &model.Article{ID: id, Title: title, DiaryID: diaryID, UpdatedAt: now}, nil
+	return &model.Article{ID: id, Title: title, Content: content, DiaryID: diaryID, UpdatedAt: now}, nil
 }
 
 func (r *repository) FindArticleByID(articleID, diaryID uint64) (*model.Article, error) {
@@ -111,4 +111,17 @@ func (r *repository) ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*mo
 		articles[article.DiaryID] = append(articles[article.DiaryID], &article)
 	}
 	return articles, nil
+}
+
+func (r *repository) UpdateArticle(articleID uint64, title, content string) (*model.Article, error) {
+	now := time.Now()
+	_, err := r.db.Exec(
+		`UPDATE article SET title = ?, content = ?, updated_at = ?
+			WHERE id = ?`,
+		title, content, now, articleID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Article{ID: articleID, Title: title, Content: content, UpdatedAt: now}, nil
 }
