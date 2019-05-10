@@ -1,9 +1,12 @@
 package web
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/hatena/go-Intern-Diary/loader"
 )
 
 type loggingResponseWriter struct {
@@ -34,5 +37,19 @@ func headerMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Oprions", "DENY")
 		next.ServeHTTP(w, r)
+	})
+}
+
+func (s *server) resolveUserMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := s.findUser(r)
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", user)))
+	})
+}
+
+func (s *server) attachLoaderMiddleware(next http.Handler) http.Handler {
+	loaders := loader.New(s.app)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r.WithContext(loaders.Attach(r.Context())))
 	})
 }

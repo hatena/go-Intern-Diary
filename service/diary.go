@@ -24,3 +24,11 @@ func (app *diaryApp) DeleteDiary(userID, diaryID uint64) error {
 func (app *diaryApp) FindDiaryByID(diaryID, userID uint64) (*model.Diary, error) {
 	return app.repo.FindDiaryByID(diaryID, userID)
 }
+
+func (app *diaryApp) ListDiariesByIDs(diaryIDs []uint64) ([]*model.Diary, error) {
+	return app.repo.ListDiariesByIDs(diaryIDs)
+}
+
+func (app *diaryApp) ListDiariesByUserIDs(userIDs []uint64) (map[uint64][]*model.Diary, error) {
+	return app.repo.ListDiariesByUserIDs(userIDs)
+}

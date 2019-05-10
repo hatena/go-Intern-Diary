@@ -1,16 +1,21 @@
 schema {
     query: Query
-    # mutation: Mutation
+    mutation: Mutation
 }
 
 type Query {
     visitor(): User!
     getUser(userId: ID!): User!
-    getDiaries(userId: ID!): [Diary]!
+    getDiary(diaryId: ID!): Diary!
 }
 
-# type Mutation {
-# }
+type Mutation {
+    createDiary(name: String!): Diary!
+    deleteDiary(diaryId: ID!): Boolean!
+    postArticle(diaryId: ID!, title: String!, content: String!): Article!
+    # updateArticle(articleId: ID!, title: String!, content: String!) : Article!
+    deleteArticle(articleId: ID!): Boolean! 
+}
 
 type User {
     id: ID!

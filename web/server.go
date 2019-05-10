@@ -3,7 +3,6 @@ package web
 //go:generate go-assets-builder --package=web --output=./templates-gen.go --strip-prefix="/templates/" --variable=Templates ../templates
 
 import (
-	"context"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -94,7 +93,9 @@ func (s *server) Handler() http.Handler {
 	}))
 
 	router.UsingContext().Handler("POST", "/query",
-		s.resolveUserMiddleware(loggingMiddleware(headerMiddleware(resolver.NewHandler(s.app)))))
+		s.attachLoaderMiddleware(
+			s.resolveUserMiddleware(
+				loggingMiddleware(headerMiddleware(resolver.NewHandler(s.app))))))
 
 	return router
 }
@@ -113,13 +114,6 @@ func (s *server) findUser(r *http.Request) (user *model.User) {
 		user, _ = s.app.FindUserByToken(cookie.Value)
 	}
 	return
-}
-
-func (s *server) resolveUserMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := s.findUser(r)
-		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", user)))
-	})
 }
 
 func (s *server) renderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, data map[string]interface{}) {

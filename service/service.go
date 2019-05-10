@@ -30,6 +30,12 @@ type DiaryApp interface {
 	FindArticleByID(articleID, diaryID uint64) (*model.Article, error)
 	DeleteArticle(articleID, diaryID uint64) error
 
+	ListDiariesByIDs(diaryIDs []uint64) ([]*model.Diary, error)
+	ListDiariesByUserIDs(userIDs []uint64) (map[uint64][]*model.Diary, error)
+
+	ListArticlesByIDs(articleIDs []uint64) ([]*model.Article, error)
+	ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.Article, error)
+
 	Close() error
 }
 
