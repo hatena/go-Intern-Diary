@@ -88,6 +88,8 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/diaries/:diary_id/articles/:article_id", s.articleHandler())
 	handle("POST", "/diaries/:diary_id/articles/:article_id/delete", s.deleteArticleHandler())
 
+	handle("GET", "/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	handle("GET", "/graphiql", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templates["graphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
 	}))
