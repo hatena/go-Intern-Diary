@@ -6,7 +6,7 @@ import gql from "graphql-tag";
 import {DiaryArticleFragment} from "./__generated__/DiaryArticleFragment"
 import {GetDiary, GetDiaryVariables} from "./__generated__/GetDiary"
 
-const diaryArticleFragment = gql`
+export const diaryArticleFragment = gql`
     fragment DiaryArticleFragment on Article {
         id
         title
@@ -37,7 +37,7 @@ const diaryFragment = gql`
     ${diaryArticleFragment}
 `
 
-const query = gql`
+export const query = gql`
     query GetDiary($diaryId: ID!) {
         getDiary(diaryId: $diaryId) {
             id
@@ -62,7 +62,7 @@ export const Diary: React.StatelessComponent<RouteComponentProps<RouteProps>> = 
                   return <p className="loading">Loading</p>
                 }
                 const {data} = result;
-                
+
                 return (
                     <div className="Articles">
                         <h1>{data!.getDiary.name}</h1>

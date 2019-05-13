@@ -9,7 +9,7 @@ import { DeleteDiary, DeleteDiaryVariables } from "./__generated__/DeleteDiary"
 import { MutationUpdaterFn } from "apollo-client";
 
 
-const query = gql`
+export const query = gql`
     query GetVisitor {
         visitor {
             ...DiaryListFragment

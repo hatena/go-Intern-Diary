@@ -11,6 +11,7 @@ import {InMemoryCache} from "apollo-cache-inmemory";
 import {GlobalHeader} from "./global_header";
 import {Index} from "./index";
 import {Diary} from "./diary";
+import {AddArticle} from "./addDiary"
 
 const client = new ApolloClient({
   link: ApolloLink.from([
@@ -40,6 +41,7 @@ export const App: React.StatelessComponent = () => (
           <Switch>
             <Route exact path="/" component={Index} />
             <Route exact path="/diaries/:diaryId" component={Diary} />
+            <Route exact path="/diaries/:diaryId/add" component={AddArticle} />
           </Switch>
         </main>
       </>
