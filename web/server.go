@@ -91,8 +91,11 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	handle("GET", "/graphiql", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates["graphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
+		templates["qgraphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
 	}))
+
+	handle("GET", "/spa/", s.spaHandler())
+	handle("GET", "/spa/*", s.spaHandler())
 
 	router.UsingContext().Handler("POST", "/query",
 		s.attachLoaderMiddleware(
@@ -423,5 +426,11 @@ func (s *server) deleteArticleHandler() http.Handler {
 			return
 		}
 		http.Redirect(w, r, fmt.Sprintf("/diaries/%d/articles", diaryID), http.StatusSeeOther)
+	})
+}
+
+func (s *server) spaHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templates["spa.tmpl"].ExecuteTemplate(w, "spa.tmpl", nil)
 	})
 }

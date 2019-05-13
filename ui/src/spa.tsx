@@ -1,8 +1,10 @@
-// import "./spa.scss";
+import "./spa.scss";
 
-// import React from "react";
-// import ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
 
-// const container = document.getElementById('container') as HTMLDivElement;
+import {App} from "./components/app";
 
-// ReactDOM.render(<App />, container)
+const container = document.getElementById('container') as HTMLDivElement;
+
+ReactDOM.render(<App />, container)
