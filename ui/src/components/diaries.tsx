@@ -1,46 +1,58 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import gql from "graphql-tag";
+import { DiaryListFragment } from "./__generated__/DiaryListFragment";
+import { DiaryListItemFragment } from "./__generated__/DiaryListItemFragment"
+import { deleteDiary } from ".";
 
-interface DiaryListItemFragment {
-    id: string;
-    name: string;
-}
 
-interface DiaryListFragment {
-    id: string;
-    name: string
-}
-
-const diaryListItemFragment = gql`fragment DiaryListItemFragment on Diary {
+export const diaryListItemFragment = gql`fragment DiaryListItemFragment on Diary {
     id
     name
 }`;
 
 interface DiaryListItemProps {
     diary: DiaryListItemFragment
+    deleteDiary?: () => void
 }
 
-export const DiaryListItem: React.StatelessComponent<DiaryListItemProps> = ({ diary }) => (
+export const DiaryListItem: React.StatelessComponent<DiaryListItemProps> = ({ diary, deleteDiary }) => (
     <div className="DiaryListItem">
-    <Link to={`/diaries/${diary.id}`}>{diary.name}</Link>
-    <span> - </span>
-  </div>
+        <div>
+            <Link to={`/diaries/${diary.id}`}>{diary.name}</Link>
+            <span> - </span>
+        </div>
+        <div>
+            {deleteDiary && <button onClick={deleteDiary}>Delete</button>}
+        </div>
+    </div>
 )
 
-export const diaryListFragment = gql`fragment DiaryListFragment on Diary {
-    id
-    ...DiaryListItemFragment
+export const diaryListFragment = gql`fragment DiaryListFragment on User {
+    name
+    diaries {
+        ...DiaryListItemFragment
+    }
 }
 ${diaryListItemFragment}
 `;
 
 interface DiaryListProps {
-    diaries: DiaryListFragment[]
+    user: DiaryListFragment
+    deleteDiary?: (diaryId: string) => void
 }
 
-export const DiaryList: React.StatelessComponent<DiaryListProps> = ({ diaries }) => (
-    <ul className="DiaryList">
-        {diaries.map(diary => (<li key={diary.id}><DiaryListItem diary={diary} /></li>))}
-    </ul>
+export const DiaryList: React.StatelessComponent<DiaryListProps> = ({ user, deleteDiary }) => (
+    <div className="DiaryList">
+        <h1>{user.name}'s Diaries</h1>
+        <ul>
+            {user.diaries.map(diary => (
+                <li key={diary.id}>
+                    <DiaryListItem 
+                    diary={diary} 
+                    deleteDiary={deleteDiary ? () => {deleteDiary(diary.id) }: undefined} />
+                </li>
+            ))}
+        </ul>
+    </div>
 );

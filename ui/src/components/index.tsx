@@ -1,52 +1,71 @@
 import React from "react"
-import {Query} from "react-apollo"
+import {Query, Mutation} from "react-apollo"
 import gql from "graphql-tag"
 
 import {DiaryList, diaryListFragment} from "./diaries"
-import {UserType, User} from "./user"
 
-interface Visitor {
-    visitor: UserType
-}
+import{ GetVisitor } from "./__generated__/GetVisitor"
+import { DeleteDiary, DeleteDiaryVariables } from "./__generated__/DeleteDiary"
+import { MutationUpdaterFn } from "apollo-client";
 
-interface ListDiaries_listDiaries {
-    id: string;
-    name: string;
-}
-interface ListDiaries {
-    user: Visitor;
-    listDiaries: ListDiaries_listDiaries[];
-}
 
 const query = gql`
-    query Visitor {
+    query GetVisitor {
         visitor {
-            id, name
+            ...DiaryListFragment
         }
     }
+${diaryListFragment}
 `
+
+export const deleteDiary = gql`
+    mutation DeleteDiary($diaryId: ID!) {
+        deleteDiary(diaryId: $diaryId)
+    }
+`;
+
+// キャッシュ？の動きがイメージしづらい
+const updateDiary: (diaryId: string) => MutationUpdaterFn<DeleteDiary> = (diaryId) => (cache, result) => {
+    const visitor  = cache.readQuery<GetVisitor>({ query });
+    const { data } = result
+    if (visitor && data) {
+        const diaries = [...visitor.visitor.diaries].filter(diary => diary.id !== diaryId);
+        const newVisitor = {
+            visitor: {
+                ...visitor.visitor,
+                diaries,
+            }
+        };
+        cache.writeQuery({query, data: newVisitor})
+    }
+}
 
 export const Index: React.StatelessComponent = () => (
     <div className="Index">
         <h1>Diaries</h1>
-        <Query<Visitor> query={query}>
+        <Query<GetVisitor> query={query}>
             {result => {
                 if (result.error) {
+                    if (result.error.message == "GraphQL error: please login") {
+                        return <a href="/">ログインして下さい</a>
+                    }
                     return <p className="error">Error: {result.error.message}</p>                    
                 }
                 if (result.loading) {
                     return <p className="loading">Loading</p>
                 }
                 const { data } = result;
-                if (data == undefined) {
-                    return <p>ログインして下さい</p>
-                }
-                const user = { 
-                    id: data.visitor.id,
-                    name: data.visitor.name
-                 }
-                return <User user={user} />;
-            }}
+                return <>
+                    <Mutation<DeleteDiary, DeleteDiaryVariables> mutation={deleteDiary}>
+                        {(deleteDiary) => {
+                            return <DiaryList 
+                                user={data!.visitor}
+                                deleteDiary={(diaryId: string) =>
+                                deleteDiary({ variables: {diaryId}, update: updateDiary(diaryId)})} />
+                        }}
+                    </Mutation>
+                </>;
+                }}
         </Query>
     </div>
 );

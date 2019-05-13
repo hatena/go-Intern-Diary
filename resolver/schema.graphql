@@ -20,13 +20,13 @@ type Mutation {
 type User {
     id: ID!
     name: String!
-    diaries: [Diary]!
+    diaries: [Diary!]!
 }
 
 type Diary {
     id: ID!
     name: String!
-    articles: [Article]!
+    articles: [Article!]!
 }
 
 type Article {

@@ -33,6 +33,9 @@ func currentUser(ctx context.Context) *model.User {
 }
 
 func (r *resolver) Visitor(ctx context.Context) (*userResolver, error) {
+	if currentUser(ctx) == nil {
+		return nil, errors.New("please login")
+	}
 	return &userResolver{currentUser(ctx)}, nil
 }
 
