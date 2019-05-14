@@ -18,7 +18,7 @@ export const diaryArticleFragment = gql`
     }
 `
 
-const diaryFragment = gql`
+export const diaryFragment = gql`
     fragment DiaryFragment on Diary {
         id
         name

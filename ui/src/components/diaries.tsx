@@ -10,6 +10,15 @@ export const diaryListItemFragment = gql`fragment DiaryListItemFragment on Diary
     name
 }`;
 
+export const diaryListFragment = gql`fragment DiaryListFragment on User {
+    name
+    diaries {
+        ...DiaryListItemFragment
+    }
+}
+${diaryListItemFragment}
+`;
+
 interface DiaryListItemProps {
     diary: DiaryListItemFragment
     deleteDiary?: () => void
@@ -19,22 +28,12 @@ export const DiaryListItem: React.StatelessComponent<DiaryListItemProps> = ({ di
     <div className="DiaryListItem">
         <div>
             <Link to={`/diaries/${diary.id}`}>{diary.name}</Link>
-            <span> - </span>
         </div>
         <div>
             {deleteDiary && <button onClick={deleteDiary}>Delete</button>}
         </div>
     </div>
 )
-
-export const diaryListFragment = gql`fragment DiaryListFragment on User {
-    name
-    diaries {
-        ...DiaryListItemFragment
-    }
-}
-${diaryListItemFragment}
-`;
 
 interface DiaryListProps {
     user: DiaryListFragment

@@ -11,7 +11,7 @@ import {InMemoryCache} from "apollo-cache-inmemory";
 import {GlobalHeader} from "./global_header";
 import {Index} from "./index";
 import {Diary} from "./diary";
-import {AddArticle} from "./addDiary"
+import {AddArticle} from "./addArticle"
 
 const client = new ApolloClient({
   link: ApolloLink.from([
