@@ -4,24 +4,15 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: PostArticle
+// GraphQL mutation operation: DeleteArticle
 // ====================================================
 
-export interface PostArticle_postArticle {
-  id: string;
-  diaryId: string;
-  title: string;
-  content: string;
+export interface DeleteArticle {
+  deleteArticle: boolean;
 }
 
-export interface PostArticle {
-  postArticle: PostArticle_postArticle;
-}
-
-export interface PostArticleVariables {
-  diaryId: string;
-  title: string;
-  content: string;
+export interface DeleteArticleVariables {
+  articleId: string;
 }
 
 /* tslint:disable */

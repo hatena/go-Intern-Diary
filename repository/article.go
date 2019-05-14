@@ -55,11 +55,11 @@ func (r *repository) FindArticleByID(articleID, diaryID uint64) (*model.Article,
 	return &article, nil
 }
 
-func (r *repository) DeleteArticle(articleID, diaryID uint64) (err error) {
+func (r *repository) DeleteArticle(articleID uint64) (err error) {
 	_, err = r.db.Exec(
 		`DELETE FROM article
-			WHERE id = ? AND diary_id = ?`,
-		articleID, diaryID,
+			WHERE id = ?`,
+		articleID,
 	)
 	return
 }
@@ -114,8 +114,20 @@ func (r *repository) ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*mo
 }
 
 func (r *repository) UpdateArticle(articleID uint64, title, content string) (*model.Article, error) {
+	var article model.Article
+	err := r.db.Get(&article,
+		`SELECT id, title, content, diary_id, updated_at FROM article
+			WHERE id = ? LIMIT 1`,
+		articleID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, articleNotFoundError
+		}
+		return nil, err
+	}
 	now := time.Now()
-	_, err := r.db.Exec(
+	_, err = r.db.Exec(
 		`UPDATE article SET title = ?, content = ?, updated_at = ?
 			WHERE id = ?`,
 		title, content, now, articleID,
@@ -123,5 +135,5 @@ func (r *repository) UpdateArticle(articleID uint64, title, content string) (*mo
 	if err != nil {
 		return nil, err
 	}
-	return &model.Article{ID: articleID, Title: title, Content: content, UpdatedAt: now}, nil
+	return &model.Article{ID: article.ID, DiaryID: article.DiaryID, Title: title, Content: content, UpdatedAt: now}, nil
 }

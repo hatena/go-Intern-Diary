@@ -3,7 +3,6 @@ import {Link} from "react-router-dom";
 import gql from "graphql-tag";
 import { DiaryListFragment } from "./__generated__/DiaryListFragment";
 import { DiaryListItemFragment } from "./__generated__/DiaryListItemFragment"
-import { deleteDiary } from ".";
 
 
 export const diaryListItemFragment = gql`fragment DiaryListItemFragment on Diary {

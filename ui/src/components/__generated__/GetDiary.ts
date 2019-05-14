@@ -9,6 +9,7 @@
 
 export interface GetDiary_getDiary_articles {
   id: string;
+  diaryId: string;
   title: string;
   content: string;
 }

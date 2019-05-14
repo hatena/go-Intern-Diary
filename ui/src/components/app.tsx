@@ -35,7 +35,7 @@ const client = new ApolloClient({
 export const App: React.StatelessComponent = () => (
   <ApolloProvider client={client}>
     <BrowserRouter basename="/spa">
-      <>
+      <> {/*  BrouserRouter直下は１つのタグしかだめってこと？あと何も中身がないこれはアリなのか */}
         <GlobalHeader />
         <main>
           <Switch>

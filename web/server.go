@@ -421,7 +421,7 @@ func (s *server) deleteArticleHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		if err := s.app.DeleteArticle(articleID, diaryID); err != nil {
+		if err := s.app.DeleteArticle(articleID); err != nil {
 			http.Error(w, fmt.Sprintf("failed to delete diary: %+v", err), http.StatusBadRequest)
 			return
 		}

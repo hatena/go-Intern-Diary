@@ -21,8 +21,8 @@ func (app *diaryApp) FindArticleByID(articleID, diaryID uint64) (*model.Article,
 	return app.repo.FindArticleByID(articleID, diaryID)
 }
 
-func (app *diaryApp) DeleteArticle(articleID, diaryID uint64) error {
-	return app.repo.DeleteArticle(articleID, diaryID)
+func (app *diaryApp) DeleteArticle(articleID uint64) error {
+	return app.repo.DeleteArticle(articleID)
 }
 
 func (app *diaryApp) ListArticlesByIDs(articleIDs []uint64) ([]*model.Article, error) {

@@ -9,6 +9,7 @@
 
 export interface DiaryFragment_articles {
   id: string;
+  diaryId: string;
   title: string;
   content: string;
 }

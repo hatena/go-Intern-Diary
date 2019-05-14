@@ -16,6 +16,10 @@ func (a *articleResolver) ID(ctx context.Context) graphql.ID {
 	return graphql.ID(fmt.Sprint(a.article.ID))
 }
 
+func (a *articleResolver) DiaryID(ctx context.Context) graphql.ID {
+	return graphql.ID(fmt.Sprint(a.article.DiaryID))
+}
+
 func (a *articleResolver) Title(ctx context.Context) string {
 	return a.article.Title
 }
