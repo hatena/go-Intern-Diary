@@ -91,7 +91,7 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	handle("GET", "/graphiql", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates["qgraphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
+		templates["graphiql.tmpl"].ExecuteTemplate(w, "graphiql.tmpl", nil)
 	}))
 
 	handle("GET", "/spa/", s.spaHandler())
@@ -309,9 +309,9 @@ func (s *server) articlesHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		var page uint64 = 1
-		var limit uint64 = 100 // todo
-		articles, err := s.app.ListArticlesByDiaryID(diaryID, page, limit)
+		var page int = 1
+		var limit int = 100 // todo
+		articles, pageInfo, err := s.app.ListArticlesByDiaryID(diaryID, page, limit)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -320,6 +320,7 @@ func (s *server) articlesHandler() http.Handler {
 			"User":     user,
 			"Diary":    diary,
 			"Articles": articles,
+			"pageInfo": pageInfo,
 		})
 	})
 }

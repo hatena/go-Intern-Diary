@@ -18,6 +18,10 @@ type Resolver interface {
 	PostArticle(context.Context, struct{ DiaryID, Title, Content string }) (*articleResolver, error)
 	UpdateArticle(context.Context, struct{ ArticleID, Title, Content string }) (*articleResolver, error)
 	DeleteArticle(context.Context, struct{ ArticleID, DiaryID string }) (bool, error)
+	ListArticles(context.Context, struct {
+		DiaryID string
+		Page    int32
+	}) (*articlesWithPageInfoResolver, error)
 }
 
 func newResolver(app service.DiaryApp) Resolver {
@@ -144,4 +148,29 @@ func (r *resolver) UpdateArticle(ctx context.Context, args struct{ ArticleID, Ti
 		return nil, err
 	}
 	return &articleResolver{article: article}, nil
+}
+
+func (r *resolver) ListArticles(ctx context.Context, args struct {
+	DiaryID string
+	Page    int32
+}) (*articlesWithPageInfoResolver, error) {
+	user := currentUser(ctx)
+	if user == nil {
+		return nil, errors.New("user nor found")
+	}
+	diaryID, err := strconv.ParseUint(args.DiaryID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	page := int(args.Page)
+	if page == 1 {
+		panic("########################################")
+	}
+	articles, pageInfo, err := r.app.ListArticlesByDiaryID(diaryID, page, model.ARTICLE_PAGE_LIMIT)
+	awp := model.ArticlesWithPageInfo{
+		Articles: articles,
+		PageInfo: pageInfo,
+	}
+	return &articlesWithPageInfoResolver{awp: &awp}, nil
+
 }

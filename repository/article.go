@@ -10,15 +10,42 @@ import (
 
 var articleNotFoundError = model.NotFoundError("article")
 
-func (r *repository) ListArticlesByDiaryID(diaryID, limit, offset uint64) ([]*model.Article, error) {
+func (r *repository) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*model.Article, *model.PageInfo, error) {
+	offset := (page-1)*limit + 1
+	total, err := r.getArticleTotalCount(diaryID)
+	if err != nil {
+		return nil, nil, err
+	}
 	articles := make([]*model.Article, 0, limit)
-	err := r.db.Select(&articles,
+	err = r.db.Select(&articles,
 		`SELECT id, title, content, diary_id, updated_at FROM article
 			WHERE diary_id = ?
 			ORDER BY updated_at DESC LIMIT ? OFFSET ?`,
 		diaryID, limit, offset,
 	)
-	return articles, err
+	pager := model.Pager{page, total, model.ARTICLE_PAGE_LIMIT}
+	pageInfo := &model.PageInfo{
+		TotalPage:       pager.TotalCount,
+		CurrentPage:     page,
+		HasNextPage:     pager.HasNextPage(),
+		HasPreviousPage: pager.HasPreviousPage(),
+	}
+	return articles, pageInfo, nil
+}
+
+func (r *repository) getArticleTotalCount(diaryID uint64) (int, error) {
+	rows, err := r.db.Query(
+		`SELECT COUNT(*) as count FROM article
+			WHERE diary_id = ?`,
+		diaryID,
+	)
+	defer rows.Close()
+	if err != nil {
+		return 0, err
+	}
+	var count int
+	rows.Scan(&count)
+	return count, nil
 }
 
 func (r *repository) CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error) {

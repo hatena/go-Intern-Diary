@@ -6,11 +6,21 @@ import (
 	"github.com/hatena/go-Intern-Diary/model"
 )
 
-func (app *diaryApp) ListArticlesByDiaryID(diaryID, page, limit uint64) ([]*model.Article, error) {
+func (app *diaryApp) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*model.Article, *model.PageInfo, error) {
 	if page < 1 || limit < 1 {
-		return nil, errors.New("page and limit should be positive")
+		return nil, nil, errors.New("page and limit should be positive")
 	}
-	return app.repo.ListArticlesByDiaryID(diaryID, limit, (page-1)*limit)
+	articles, pageInfo, err := app.repo.ListArticlesByDiaryID(diaryID, page, limit) // スタートが1
+	if err != nil {
+		return nil, nil, err
+	}
+	if pageInfo.CurrentPage > pageInfo.TotalPage {
+		return nil, nil, errors.New("Invalid Page Paramter")
+	}
+	if pageInfo.CurrentPage != 1 {
+		panic("page info error")
+	}
+	return articles, pageInfo, nil
 }
 
 func (app *diaryApp) CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error) {

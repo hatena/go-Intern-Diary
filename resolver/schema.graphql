@@ -7,6 +7,7 @@ type Query {
     visitor(): User!
     getUser(userId: ID!): User!
     getDiary(diaryId: ID!): Diary!
+    listArticles(diaryId: ID!, page: Int!): ArticleWithPageInfo!
 }
 
 type Mutation {
@@ -34,4 +35,16 @@ type Article {
     diaryId: ID!
     title: String!
     content: String!
+}
+
+type PageInfo {
+    totalPage: Int!
+    currentPage: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+}
+
+type ArticleWithPageInfo {
+    articles: [Article!]!
+    pageInfo: PageInfo!
 }
