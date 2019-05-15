@@ -37,12 +37,19 @@ type Articles = {
     content: string
 }
 
-interface ListArticlesProps {
+type PageInfo = {
+    totalPage: number,
+    currentPage: number,
+    hasNextPage: boolean,
+    hasPreviousPage: boolean,
+}
 
+interface ListArticlesProps {
+    pageInfo: PageInfo
 }
 
 interface ListArticleState {
-
+    pageInfo: PageInfo
 }
 
 export class ListArticlesContainer extends React.PureComponent<ListArticlesProps, ListArticleState> {
