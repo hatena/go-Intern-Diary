@@ -12,6 +12,7 @@ import {GlobalHeader} from "./global_header";
 import {Index} from "./index";
 import {Diary} from "./diary";
 import {AddArticle} from "./addArticle"
+import {Me} from "./me"
 
 const client = new ApolloClient({
   link: ApolloLink.from([
@@ -35,11 +36,12 @@ const client = new ApolloClient({
 export const App: React.StatelessComponent = () => (
   <ApolloProvider client={client}>
     <BrowserRouter basename="/spa">
-      <> {/*  BrouserRouter直下は１つのタグしかだめってこと？あと何も中身がないこれはアリなのか */}
+      <> {/*Todo  BrouserRouter直下は１つのタグしかだめってこと？あと何も中身がないこれはアリなのか */}
         <GlobalHeader />
         <main>
           <Switch>
             <Route exact path="/" component={Index} />
+            <Route exact path="/me" component={Me} />
             <Route exact path="/diaries/:diaryId" component={Diary} />
             <Route exact path="/diaries/:diaryId/add" component={AddArticle} />
           </Switch>
