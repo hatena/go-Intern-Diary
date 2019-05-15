@@ -17,9 +17,6 @@ func (app *diaryApp) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*
 	if pageInfo.CurrentPage > pageInfo.TotalPage {
 		return nil, nil, errors.New("Invalid Page Paramter")
 	}
-	if pageInfo.CurrentPage != 1 {
-		panic("page info error")
-	}
 	return articles, pageInfo, nil
 }
 

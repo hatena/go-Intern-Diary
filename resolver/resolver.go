@@ -163,10 +163,13 @@ func (r *resolver) ListArticles(ctx context.Context, args struct {
 		return nil, err
 	}
 	page := int(args.Page)
-	if page == 1 {
-		panic("########################################")
-	}
+
 	articles, pageInfo, err := r.app.ListArticlesByDiaryID(diaryID, page, model.ARTICLE_PAGE_LIMIT)
+
+	if pageInfo == nil {
+		panic("pageInfo nil")
+	}
+
 	awp := model.ArticlesWithPageInfo{
 		Articles: articles,
 		PageInfo: pageInfo,

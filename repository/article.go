@@ -13,6 +13,7 @@ var articleNotFoundError = model.NotFoundError("article")
 func (r *repository) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*model.Article, *model.PageInfo, error) {
 	offset := (page-1)*limit + 1
 	total, err := r.getArticleTotalCount(diaryID)
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -23,6 +24,9 @@ func (r *repository) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*
 			ORDER BY updated_at DESC LIMIT ? OFFSET ?`,
 		diaryID, limit, offset,
 	)
+	if err != nil {
+		return nil, nil, err
+	}
 	pager := model.Pager{page, total, model.ARTICLE_PAGE_LIMIT}
 	pageInfo := &model.PageInfo{
 		TotalPage:       pager.TotalCount,
@@ -34,17 +38,16 @@ func (r *repository) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*
 }
 
 func (r *repository) getArticleTotalCount(diaryID uint64) (int, error) {
-	rows, err := r.db.Query(
+	var count int
+	err := r.db.Select(&count,
 		`SELECT COUNT(*) as count FROM article
 			WHERE diary_id = ?`,
 		diaryID,
 	)
-	defer rows.Close()
+	panic(count)
 	if err != nil {
 		return 0, err
 	}
-	var count int
-	rows.Scan(&count)
 	return count, nil
 }
 
