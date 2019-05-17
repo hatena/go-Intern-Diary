@@ -10,18 +10,29 @@ interface PaginationProps {
     handlePushPageButton: (page: number) => void
 }
 
-
-const PageUrlBuilder = (diaryId: string, page: number, message: string) => (
+// いい書き方がぜんぜん分からなかった
+const PageButtonBuilder = (diaryId: string, page: number, message: string) => (
     <span key={message}> <Link to={`/diaries/${diaryId}/${page}`}>{message}</Link> </span>
+)
+
+const FixedPageBuilder = (diaryId: string, page: number, message: string) => (
+    <span key={message}> {message} </span>
 )
 
 const pager = (diaryId: string, start: number, pageInfo: PageInfo) => (
     <span>ページ: 
-        {pageInfo.hasPreviousPage && PageUrlBuilder(diaryId, pageInfo.currentPage-1, "Privious")}
-        {PAGE_LINK_NUM.map(i => 
-            (start+i > 0 && start+i <= pageInfo.totalPage) && PageUrlBuilder(diaryId, start+i, (start+i).toString())
-        )}
-        {pageInfo.hasNextPage &&PageUrlBuilder(diaryId, pageInfo.currentPage+1, "Next")}
+        {pageInfo.hasPreviousPage && PageButtonBuilder(diaryId, pageInfo.currentPage-1, "Privious")}
+        {
+            PAGE_LINK_NUM.map(i => {
+                if (start+i == pageInfo.currentPage) {
+                    return FixedPageBuilder(diaryId, start+i, (start+i).toString())
+                }
+                if (start+i > 0 && start+i <= pageInfo.totalPage) {
+                    return PageButtonBuilder(diaryId, start+i, (start+i).toString())
+                }
+            })
+        }
+        {pageInfo.hasNextPage && PageButtonBuilder(diaryId, pageInfo.currentPage+1, "Next")}
     </span>    
 )
 
