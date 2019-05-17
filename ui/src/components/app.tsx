@@ -42,11 +42,11 @@ export const App: React.StatelessComponent = () => (
           <Switch>
             <Route exact path="/" component={Index} />
             <Route exact path="/me" component={Me} />
-            <Route exact path="/diaries/:diaryId" component={Diary} />
             <Route exact path="/diaries/:diaryId/add" component={AddArticle} />
+            <Route exact path="/diaries/:diaryId/:page?" component={Diary} />
           </Switch>
         </main>
       </>
     </BrowserRouter>
-  </ApolloProvider>
+  </ApolloProvider> 
 );

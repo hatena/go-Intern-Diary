@@ -7,8 +7,9 @@ import * as H from 'history'
 
 import {diaryArticleFragment} from "./diary"
 import {PostArticle, PostArticleVariables} from "./__generated__/PostArticle"
-import { GetDiary } from "./__generated__/GetDiary";
-import {query as getDiaryQuery} from "./diary";
+import {ListArticles} from "./ListPagingArticles/__generated__/ListArticles"
+import {listArticleQuery} from "./ListPagingArticles/container";
+
 
 
 
@@ -23,19 +24,20 @@ const mutation = gql`
 
 
 const updateArticle: (diaryId: string) => MutationUpdaterFn<PostArticle> = (diaryId) => (cache, result) => {
-    const { data } = result;
-    const diary = cache.readQuery<GetDiary>({ query: getDiaryQuery, variables: {diaryId: diaryId}})       
-    if (diary && data) {
-        const articles = [...diary.getDiary.articles];
-        articles.unshift(data.postArticle);
-        const newDiary = {
-            getDiary: {
-                ...diary.getDiary,
-                articles: articles,
-            }
-        };
-        cache.writeQuery({ query: getDiaryQuery, data: newDiary });
-    };
+    // const { data } = result;
+    // const listArticles = cache.readQuery<ListArticles>({ query: listArticleQuery, variables: {diaryId: diaryId, page: page}})       
+    // if (listArticles && data) {
+    //     const articles = [...listArticles.listArticles.articles];
+    //     articles.unshift(data.postArticle);
+    //     const newDiary = {
+    //         listArticles: {
+    //             ...listArticles.listArticles.articles,
+    //             articles: articles,
+    //         }
+    //     };
+    //     cache.writeQuery({ query: listArticleQuery, data: newDiary });
+    // };
+    window.location.reload();
 }
 
 interface RouteProps {
@@ -94,7 +96,7 @@ class ArticleForm extends React.PureComponent<ArticleFormProps, ArticleFormState
     };
 
     private handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); // これどういう意味だろう
+        event.preventDefault();
         this.props.post(
             this.props.diaryId, this.state.title, this.state.content)
         this.props.history.push(`/diaries/${this.props.diaryId}`);
