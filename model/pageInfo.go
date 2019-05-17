@@ -24,7 +24,7 @@ func (p *Pager) HasPreviousPage() bool {
 
 func (p *Pager) TotalPage() int {
 	if p.TotalCount == 0 {
-		return 0
+		return 1
 	}
 	return (p.TotalCount-1)/p.Limit + 1
 }
