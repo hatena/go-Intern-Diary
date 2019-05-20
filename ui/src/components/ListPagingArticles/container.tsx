@@ -1,5 +1,4 @@
 import React from "react"
-import {RouteComponentProps} from "react-router";
 import gql from "graphql-tag"
 
 import {AritlceListWithPagination} from "./articleListWithPagination"

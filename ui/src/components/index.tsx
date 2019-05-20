@@ -1,15 +1,11 @@
 import React from "react"
-import {Query, Mutation} from "react-apollo"
+import {Query} from "react-apollo"
 import gql from "graphql-tag"
 
 import {DiaryList, diaryListFragment} from "./diaries"
 
 import{ GetVisitor } from "./__generated__/GetVisitor"
-import { DeleteDiary, DeleteDiaryVariables } from "./__generated__/DeleteDiary"
-import { MutationUpdaterFn } from "apollo-client";
-
-import { createUpdateDiary, mutation as createDiary, CreateDiaryForm } from "./addDiary"
-import { CreateDiary, CreateDiaryVariables } from "./__generated__/CreateDiary"
+import { CreateDiaryFormContainer, mutation as createDiary } from "./AddDiaryForm/container"
 
 export const query = gql`
     query GetVisitor {
@@ -19,28 +15,6 @@ export const query = gql`
     }
 ${diaryListFragment}
 `
-
-export const deleteDiary = gql`
-    mutation DeleteDiary($diaryId: ID!) {
-        deleteDiary(diaryId: $diaryId)
-    }
-`;
-
-// キャッシュ？の動きがイメージしづらい
-const updateDiary: (diaryId: string) => MutationUpdaterFn<DeleteDiary> = (diaryId) => (cache, result) => {
-    const visitor  = cache.readQuery<GetVisitor>({ query });
-    const { data } = result
-    if (visitor && data) {
-        const diaries = [...visitor.visitor.diaries].filter(diary => diary.id !== diaryId);
-        const newVisitor = {
-            visitor: {
-                ...visitor.visitor,
-                diaries,
-            }
-        };
-        cache.writeQuery({query, data: newVisitor})
-    }
-}
 
 export const Index: React.StatelessComponent = () => (
     <div className="Index">
@@ -58,21 +32,8 @@ export const Index: React.StatelessComponent = () => (
                 }
                 const { data } = result;
                 return <>
-                    <Mutation<CreateDiary, CreateDiaryVariables> mutation={createDiary}>
-                        {(createDiary) => {
-                            return <CreateDiaryForm 
-                                    create={(name: string) =>
-                                    createDiary({ variables: {name}, update: createUpdateDiary})} />
-                        }}
-                    </Mutation>
-                    <Mutation<DeleteDiary, DeleteDiaryVariables> mutation={deleteDiary}>
-                        {(deleteDiary) => {
-                            return <DiaryList 
-                                user={data!.visitor}
-                                deleteDiary={(diaryId: string) =>
-                                deleteDiary({ variables: {diaryId}, update: updateDiary(diaryId)})} />
-                        }}
-                    </Mutation>
+                    <CreateDiaryFormContainer />
+                    <DiaryList user={data!.visitor} />
                 </>;
                 }}
         </Query>

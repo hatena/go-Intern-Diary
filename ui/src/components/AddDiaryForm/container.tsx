@@ -1,12 +1,12 @@
 import React from "react";
-import {Mutation, MutationUpdaterFn} from "react-apollo";
+import {MutationUpdaterFn} from "react-apollo";
 import gql from "graphql-tag";
-import { diaryFragment } from "./diary";
 
-import { CreateDiary } from "./__generated__/CreateDiary"
-import { GetVisitor } from "./__generated__/GetVisitor";
+import { CreateDiary } from "../__generated__/CreateDiary"
+import { GetVisitor } from "../__generated__/GetVisitor";
 
-import { query as getVisitorQuery } from "./index"
+import { query as getVisitorQuery } from "../index"
+import { CreateDiaryForm } from "./addDiary";
 
 const createDiaryFragment = gql`
     fragment createDiaryFragment on Diary {
@@ -41,16 +41,22 @@ export const createUpdateDiary: MutationUpdaterFn<CreateDiary> = (cache, result)
 }
 
 interface DiaryFormProps {
-    create: (name: string) => void
 }
 
 interface DiaryFormState {
     name: string;
+    tags: Tag[];
 }
-export class CreateDiaryForm extends React.PureComponent<DiaryFormProps, DiaryFormState> {
+
+export type Tag = {
+    name: string
+}
+
+export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps, DiaryFormState> {
     
     state = {
         name: "",
+        tags: [],
     }
 
     private handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,9 +66,9 @@ export class CreateDiaryForm extends React.PureComponent<DiaryFormProps, DiaryFo
         })
     }
 
-    private handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    private handleSubmit = (create: () => void) => (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        this.props.create(this.state.name)
+        create()
         this.setState({
             name: ""
         })
@@ -70,16 +76,12 @@ export class CreateDiaryForm extends React.PureComponent<DiaryFormProps, DiaryFo
 
     render() {
         return (
-            <form className="CreateDiaryForm" onSubmit={this.handleSubmit}>
-                <div>
-                    <label>Diary Name:
-                        <input type="TEXT" name="name" value={this.state.name} onChange={this.handleInput} />
-                    </label>
-                </div>
-                <div>
-                    <button>Create New</button>
-                </div>
-            </form>
+            <CreateDiaryForm 
+                name={this.state.name} 
+                handleSubmit={this.handleSubmit} 
+                handleInput={this.handleInput}
+                tags={[]} 
+            />
         )
 
     }
