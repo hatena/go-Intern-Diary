@@ -22,22 +22,21 @@ const mutation = gql`
     ${diaryArticleFragment}
 `;
 
-
 const updateArticle: (diaryId: string) => MutationUpdaterFn<PostArticle> = (diaryId) => (cache, result) => {
-    // const { data } = result;
-    // const listArticles = cache.readQuery<ListArticles>({ query: listArticleQuery, variables: {diaryId: diaryId, page: page}})       
-    // if (listArticles && data) {
-    //     const articles = [...listArticles.listArticles.articles];
-    //     articles.unshift(data.postArticle);
-    //     const newDiary = {
-    //         listArticles: {
-    //             ...listArticles.listArticles.articles,
-    //             articles: articles,
-    //         }
-    //     };
-    //     cache.writeQuery({ query: listArticleQuery, data: newDiary });
-    // };
-    window.location.reload();
+    const { data } = result;
+    const listArticles = cache.readQuery<ListArticles>({ query: listArticleQuery, variables: {diaryId: diaryId, page: 1}})       
+    if (listArticles && data) {
+        const articles = [...listArticles.listArticles.articles];
+        articles.unshift(data.postArticle);
+        const newDiary = {
+            listArticles: {
+                ...listArticles.listArticles,
+                articles: articles,
+            }
+        };
+        cache.writeQuery({ query: listArticleQuery, variables: {diaryId: diaryId, page: 1} , data: newDiary });
+    };
+    // window.location.reload();
 }
 
 interface RouteProps {

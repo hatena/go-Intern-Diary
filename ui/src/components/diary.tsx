@@ -9,6 +9,8 @@ import {DiaryArticleFragment} from "./__generated__/DiaryArticleFragment"
 import {GetDiary, GetDiaryVariables} from "./__generated__/GetDiary"
 import {DeleteArticle, DeleteArticleVariables} from "./__generated__/DeleteArticle"
 import {ListArticlesContainer} from "./ListPagingArticles/container"
+import {ListArticles} from "./ListPagingArticles/__generated__/ListArticles"
+import {listArticleQuery} from "./ListPagingArticles/container";
 
 export const diaryArticleFragment = gql`
     fragment DiaryArticleFragment on Article {
@@ -45,23 +47,20 @@ export const deleteArticle = gql`
     }
 `
 
-export const deleteUpdateArticle: (diaryId: string, articleId: string) => MutationUpdaterFn<DeleteArticle> = (diaryId, articleId) => (cache, result) => {
-    // const { data } = result
-    // const diary = cache.readQuery<GetDiary>({ query: query, variables: {diaryId: diaryId}}) 
-    // if (diary && data) {
-    //     const name = diary.getDiary.name
-    //     const articles = [...diary.getDiary.articles].filter(article => article.id !== articleId);
-    //     // ここがよくわからない
-    //     const newDiary = {
-    //         getDiary: {
-    //             // id: diaryId, name: name, // なぜこれだとダメなのかわからない、このスプレッド記法がなんのためにあるのか
-    //             ...diary.getDiary, 
-    //             articles: articles,
-    //         }
-    //     };
-    //     cache.writeQuery({query, data: newDiary})
-    // }
-    window.location.reload();
+export const deleteUpdateArticle: (diaryId: string, articleId: string, page: number) => MutationUpdaterFn<DeleteArticle> = (diaryId, articleId, page) => (cache, result) => {
+    const { data } = result;
+    const listArticles = cache.readQuery<ListArticles>({ query: listArticleQuery, variables: {diaryId: diaryId, page: page}})       
+    if (listArticles && data) {
+        const articles = [...listArticles.listArticles.articles].filter(article => article.id !== articleId);
+        const newDiary = {
+            listArticles: {
+                ...listArticles.listArticles,
+                articles: articles,
+            }
+        };
+        cache.writeQuery({ query: listArticleQuery, variables: {diaryId: diaryId, page: page} , data: newDiary });
+    };
+    // window.location.reload();
 }
 
 interface DiaryArticleProps {

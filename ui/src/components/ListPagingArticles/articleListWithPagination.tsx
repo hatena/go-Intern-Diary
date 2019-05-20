@@ -48,7 +48,7 @@ export const AritlceListWithPagination: React.StatelessComponent<ArticleListWith
                                     {(deleteArticle) => (
                                         <ArticleItem 
                                             article={article} 
-                                            deleteArticle={(articleId: string) => deleteArticle({ variables: {articleId}, update: deleteUpdateArticle(diaryId, articleId) })}
+                                            deleteArticle={(articleId: string) => deleteArticle({ variables: {articleId}, update: deleteUpdateArticle(diaryId, articleId, pageInfo.currentPage) })}
                                         />
                                     )}
                                     </Mutation>
