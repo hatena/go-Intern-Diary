@@ -3,7 +3,7 @@ import {Mutation} from "react-apollo"
 import gql from "graphql-tag"
 import { MutationUpdaterFn } from "apollo-client";
 
-import { query } from "../index"
+import { query } from "../UserTop/container"
 import{ GetVisitor } from "../__generated__/GetVisitor"
 import { DeleteDiary } from "../__generated__/DeleteDiary"
 import { DeleteDiaryForm } from "./deleteDiary";

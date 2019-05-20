@@ -1,7 +1,7 @@
 import React from "react";
 import gql from "graphql-tag";
-import { DiaryListFragment } from "./__generated__/DiaryListFragment";
-import { DiaryListItem } from "./DiaryListItem/diaryListItem"
+import { DiaryListFragment } from "../__generated__/DiaryListFragment";
+import { DiaryListItem } from "../DiaryListItem/diaryListItem"
 
 
 

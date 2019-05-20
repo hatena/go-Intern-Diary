@@ -1,15 +1,12 @@
-import gql from "graphql-tag"
 import React from "react"
-import {RouteComponentProps} from "react-router";
-import { Query, Mutation } from "react-apollo";
+import { Query } from "react-apollo";
 
-import {DeleteArticle, DeleteArticleVariables} from "../__generated__/DeleteArticle"
-import {deleteArticle, deleteUpdateArticle} from "../diary"
 import { ListArticles, ListArticlesVariables } from "./__generated__/ListArticles";
-import { ArticleItem } from "./articleItem";
 import { Pagination } from "./pagination"
+import {listArticleQuery as query} from "./container"
+import {PageInfo, Article} from "./container"
+import { ArticleList } from "./articleList";
 
-import {PageInfo, Article, listArticleQuery as query } from "./container"
 
 interface ArticleListWithPaginationProps {
     diaryId: string
@@ -40,25 +37,8 @@ export const AritlceListWithPagination: React.StatelessComponent<ArticleListWith
                 
                 return (
                     <div>
-                        <div className="ArticleList">
-                            <ul>
-                                {articles.map( article => 
-                                <li key={article.id}>
-                                    <Mutation<DeleteArticle, DeleteArticleVariables> mutation={deleteArticle}>
-                                    {(deleteArticle) => (
-                                        <ArticleItem 
-                                            article={article} 
-                                            deleteArticle={(articleId: string) => deleteArticle({ variables: {articleId}, update: deleteUpdateArticle(diaryId, articleId, pageInfo.currentPage) })}
-                                        />
-                                    )}
-                                    </Mutation>
-                                </li>
-                                )}
-                            </ul>
-                        </div>
-                        <div className="Pagination">
-                            <Pagination pageInfo={pageInfo} diaryId={diaryId} handlePushPageButton={handlePushPageButton} />
-                        </div>
+                        <ArticleList diaryId={diaryId} pageInfo={pageInfo} articles={articles} />
+                        <Pagination pageInfo={pageInfo} diaryId={diaryId} handlePushPageButton={handlePushPageButton} />
                     </div>
                 )
             }}        

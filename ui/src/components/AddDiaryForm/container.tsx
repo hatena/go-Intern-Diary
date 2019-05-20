@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 import { CreateDiary } from "../__generated__/CreateDiary"
 import { GetVisitor } from "../__generated__/GetVisitor";
 
-import { query as getVisitorQuery } from "../index"
+import { query as getVisitorQuery } from "../UserTop/container"
 import { CreateDiaryForm } from "./addDiary";
 
 const createDiaryFragment = gql`

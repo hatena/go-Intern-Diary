@@ -1,25 +1,15 @@
-import React from "react";
+import React from "react"
 import {Query} from "react-apollo"
 
-import { query } from "./index"
-import{ GetVisitor } from "./__generated__/GetVisitor"
+import {DiaryList} from "../DiaryList/diaryList"
+import{ GetVisitor } from "../__generated__/GetVisitor"
+import { CreateDiaryFormContainer} from "../AddDiaryForm/container"
+import { query } from "./container"
 
-type MeProps = {
-    name: string
-}
 
-const AboutMe: React.StatelessComponent<MeProps> = ({name}) => {
-    return (
-        <div className="me">
-            <h2>user name</h2> 
-            <h1> {name} </h1>
-        </div>
-    )
-}
-
-export const Me: React.StatelessComponent = () => (
-    <div>
-        <p>Register Information</p>
+export const UserTop: React.StatelessComponent = () => (
+    <div className="UserTop">
+        <h1>Diaries</h1>
         <Query<GetVisitor> query={query}>
             {result => {
                 if (result.error) {
@@ -32,8 +22,11 @@ export const Me: React.StatelessComponent = () => (
                     return <p className="loading">Loading</p>
                 }
                 const { data } = result;
-                return <AboutMe name={data!.visitor.name}/>
-                }}
+                return <>
+                    <CreateDiaryFormContainer />
+                    <DiaryList user={data!.visitor} />
+                </>;
+            }}
         </Query>
     </div>
-)
+);

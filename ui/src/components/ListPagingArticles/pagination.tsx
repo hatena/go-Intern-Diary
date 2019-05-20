@@ -20,20 +20,22 @@ const FixedPageBuilder = (diaryId: string, page: number, message: string) => (
 )
 
 const pager = (diaryId: string, start: number, pageInfo: PageInfo) => (
-    <span>ページ: 
-        {pageInfo.hasPreviousPage && PageButtonBuilder(diaryId, pageInfo.currentPage-1, "Privious")}
-        {
-            PAGE_LINK_NUM.map(i => {
-                if (start+i == pageInfo.currentPage) {
-                    return FixedPageBuilder(diaryId, start+i, (start+i).toString())
-                }
-                if (start+i > 0 && start+i <= pageInfo.totalPage) {
-                    return PageButtonBuilder(diaryId, start+i, (start+i).toString())
-                }
-            })
-        }
-        {pageInfo.hasNextPage && PageButtonBuilder(diaryId, pageInfo.currentPage+1, "Next")}
-    </span>    
+    <div className="Pagination">
+        <span>ページ: 
+            {pageInfo.hasPreviousPage && PageButtonBuilder(diaryId, pageInfo.currentPage-1, "Privious")}
+            {
+                PAGE_LINK_NUM.map(i => {
+                    if (start+i == pageInfo.currentPage) {
+                        return FixedPageBuilder(diaryId, start+i, (start+i).toString())
+                    }
+                    if (start+i > 0 && start+i <= pageInfo.totalPage) {
+                        return PageButtonBuilder(diaryId, start+i, (start+i).toString())
+                    }
+                })
+            }
+            {pageInfo.hasNextPage && PageButtonBuilder(diaryId, pageInfo.currentPage+1, "Next")}
+        </span>    
+    </div>
 )
 
 export const Pagination: React.StatelessComponent<PaginationProps> = ({pageInfo, diaryId}) => {
