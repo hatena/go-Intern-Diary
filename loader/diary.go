@@ -54,16 +54,20 @@ func newDiaryLoader(app service.DiaryApp) dataloader.BatchFunc {
 		results := make([]*dataloader.Result, len(keys))
 		diaryIDs := make([]uint64, 0, len(keys))
 		userIDs := make([]uint64, 0, len(keys))
+		tagIDs := make([]uint64, 0, len(keys))
 		for _, key := range keys {
 			switch key := key.(type) {
 			case diaryIDKey:
 				diaryIDs = append(diaryIDs, key.id)
 			case userIDKey:
 				userIDs = append(userIDs, key.id)
+			case tagIDKey:
+				tagIDs = append(tagIDs, key.id)
 			}
 		}
 		diaries, _ := app.ListDiariesByIDs(diaryIDs)
 		diariesByUserIDs, _ := app.ListDiariesByUserIDs(userIDs)
+		diariesByTagIDs, _ := app.ListDiariesByTagIDs(tagIDs)
 		for i, key := range keys {
 			results[i] = &dataloader.Result{Data: nil, Error: nil}
 			switch key := key.(type) {
@@ -79,6 +83,8 @@ func newDiaryLoader(app service.DiaryApp) dataloader.BatchFunc {
 				}
 			case userIDKey:
 				results[i].Data = diariesByUserIDs[key.id]
+			case tagIDKey:
+				results[i].Data = diariesByTagIDs[key.id]
 			}
 		}
 		return results

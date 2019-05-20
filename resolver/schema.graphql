@@ -28,6 +28,7 @@ type Diary {
     id: ID!
     name: String!
     articles: [Article!]!
+    tags: [Tag!]!
 }
 
 type Article {
@@ -47,4 +48,10 @@ type PageInfo {
 type ArticleWithPageInfo {
     articles: [Article!]!
     pageInfo: PageInfo!
+}
+
+type Tag {
+    category_id: String!
+    tag_name: String!
+    diaries: [Diary!]!
 }

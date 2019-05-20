@@ -47,3 +47,15 @@ func (d *diaryResolver) Articles(ctx context.Context) ([]*articleResolver, error
 	}
 	return articleResolvers, nil
 }
+
+func (d *diaryResolver) Tags(ctx context.Context) ([]*tagResolver, error) {
+	tags, err := loader.LoadTagsByDiaryID(ctx, d.diary.ID)
+	if err != nil {
+		return nil, err
+	}
+	tagResolvers := make([]*tagResolver, len(tags))
+	for i, tag := range tags {
+		tagResolvers[i] = &tagResolver{taga: tag}
+	}
+	return tagResolvers, nil
+}
