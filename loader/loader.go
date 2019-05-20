@@ -19,6 +19,7 @@ func New(app service.DiaryApp) Loaders {
 			userLoaderKey:    newUserLoader(app),
 			diaryLoaderKey:   newDiaryLoader(app),
 			articleLoaderKey: newArticleLoader(app),
+			tagLoaderKey:     newTagLoader(app),
 		},
 	}
 }
