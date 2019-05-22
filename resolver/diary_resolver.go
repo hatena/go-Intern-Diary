@@ -55,7 +55,7 @@ func (d *diaryResolver) Tags(ctx context.Context) ([]*tagResolver, error) {
 	}
 	tagResolvers := make([]*tagResolver, len(tags))
 	for i, tag := range tags {
-		tagResolvers[i] = &tagResolver{taga: tag}
+		tagResolvers[i] = &tagResolver{tag: tag}
 	}
 	return tagResolvers, nil
 }

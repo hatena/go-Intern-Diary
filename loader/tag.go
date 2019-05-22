@@ -41,7 +41,7 @@ func LoadTagsByDiaryID(ctx context.Context, id uint64) ([]*model.Tag, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := ldr.Load(ctx, tagIDKey{id: id})()
+	data, err := ldr.Load(ctx, diaryIDKey{id: id})()
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func newTagLoader(app service.DiaryApp) dataloader.BatchFunc {
 				diaryIDs = append(diaryIDs, key.id)
 			}
 		}
-		tagsByIDs, _ := app.ListTagsByIDs(tagsIDs)
+		tagsByIDs, _ := app.ListTagsByIDs(tagIDs)
 		tagsByDiaryIDs, _ := app.ListTagsByDiaryIDs(diaryIDs)
 		for i, key := range keys {
 			results[i] = &dataloader.Result{Data: nil, Error: nil}

@@ -2,11 +2,13 @@ import React from "react";
 import {MutationUpdaterFn} from "react-apollo";
 import gql from "graphql-tag";
 
-import { CreateDiary } from "../__generated__/CreateDiary"
-import { GetVisitor } from "../__generated__/GetVisitor";
+import { CreateDiary } from "./__generated__/CreateDiary"
+import { GetVisitor } from "../UserTop/__generated__/GetVisitor";
 
 import { query as getVisitorQuery } from "../UserTop/container"
 import { CreateDiaryForm } from "./addDiary";
+import { triggerAsyncId } from "async_hooks";
+import { AddTagForm } from "./addTagForm";
 
 const createDiaryFragment = gql`
     fragment createDiaryFragment on Diary {
@@ -16,8 +18,8 @@ const createDiaryFragment = gql`
 `;
 
 export const mutation = gql`
-    mutation CreateDiary($name: String!) {
-        createDiary(name: $name) {
+    mutation CreateDiary($name: String!, $tags: [String!]!) {
+        createDiary(name: $name, tags: $tags) {
             ...createDiaryFragment
         }
     }
@@ -45,6 +47,7 @@ interface DiaryFormProps {
 
 interface DiaryFormState {
     name: string;
+    tagName: string;
     tags: Tag[];
 }
 
@@ -54,9 +57,15 @@ export type Tag = {
 
 export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps, DiaryFormState> {
     
-    state = {
-        name: "",
-        tags: [],
+    constructor(props: DiaryFormProps) {
+        super(props)
+        const tags: Tag[] = []
+        this.state = {
+            name: "",
+            tagName: "",
+            tags: tags,
+        }
+
     }
 
     private handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,18 +79,53 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
         event.preventDefault()
         create()
         this.setState({
-            name: ""
+            name: "",
+            tagName: "",
+        })
+    }
+
+
+    private handleTagInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const input = event.currentTarget;
+        this.setState({
+            tagName: input.value
+        })
+    }
+
+    private handleTagSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        const newTag: Tag = { name: this.state.tagName }
+        const updatedTags = [newTag].concat(this.state.tags)
+        this.setState({
+            tags: updatedTags,
+            tagName: "",
+        })
+    }
+
+    private handleDeleteButton = (selectedTag: Tag) => () => {
+        const newTags = this.state.tags.filter(tag => tag.name != selectedTag.name)
+        this.setState({
+            tags: newTags
         })
     }
 
     render() {
         return (
-            <CreateDiaryForm 
-                name={this.state.name} 
-                handleSubmit={this.handleSubmit} 
-                handleInput={this.handleInput}
-                tags={[]} 
-            />
+            <div>
+                <CreateDiaryForm 
+                    name={this.state.name} 
+                    handleSubmit={this.handleSubmit} 
+                    handleInput={this.handleInput}
+                    tags={this.state.tags}
+                />
+                <AddTagForm 
+                    tagName={this.state.tagName}
+                    tags={this.state.tags}
+                    handleDeleteButton={this.handleDeleteButton}
+                    handleTagInput={this.handleTagInput}
+                    handleTagSubmit={this.handleTagSubmit}
+                />
+            </div>
         )
 
     }

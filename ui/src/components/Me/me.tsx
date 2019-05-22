@@ -2,7 +2,7 @@ import React from "react";
 import {Query} from "react-apollo"
 
 import { query } from "../UserTop/container"
-import{ GetVisitor } from "../__generated__/GetVisitor"
+import{ GetVisitor } from "../UserTop/__generated__/GetVisitor"
 
 type MeProps = {
     name: string

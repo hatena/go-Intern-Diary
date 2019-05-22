@@ -1,7 +1,7 @@
 import React from "react"
 import {Mutation} from "react-apollo"
 import {deleteDiary, updateDiary} from "./container"
-import { DeleteDiary, DeleteDiaryVariables } from "../__generated__/DeleteDiary"
+import { DeleteDiary, DeleteDiaryVariables } from "./__generated__/DeleteDiary"
 
 
 interface DeleteDiaryProps {

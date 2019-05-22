@@ -1,7 +1,7 @@
 import React from "react"
 import {Link} from "react-router-dom";
 import { DeleteDiaryForm} from "./deleteDiary"
-import { DiaryListItemFragment } from "../__generated__/DiaryListItemFragment"
+import { DiaryListItemFragment } from "../DiaryList/__generated__/DiaryListItemFragment"
 
 interface DiaryListItemProps {
     diary: DiaryListItemFragment

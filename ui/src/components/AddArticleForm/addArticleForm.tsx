@@ -1,7 +1,7 @@
 import React from "react";
 import {Mutation, MutationUpdaterFn} from "react-apollo";
 
-import {PostArticle, PostArticleVariables} from "../__generated__/PostArticle"
+import {PostArticle, PostArticleVariables} from "./__generated__/PostArticle"
 import {ListArticles} from "../ListPagingArticles/__generated__/ListArticles"
 import {listArticleQuery} from "../ListPagingArticles/container";
 import {mutation} from "./container"

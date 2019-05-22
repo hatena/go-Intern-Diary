@@ -7,9 +7,14 @@
 // GraphQL fragment: DiaryFragment
 // ====================================================
 
+export interface DiaryFragment_tags {
+  tag_name: string;
+}
+
 export interface DiaryFragment {
   id: string;
   name: string;
+  tags: DiaryFragment_tags[];
 }
 
 /* tslint:disable */

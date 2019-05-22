@@ -26,7 +26,7 @@ func (t *tagResolver) CategoryID(ctx context.Context) graphql.ID {
 }
 
 func (t *tagResolver) Diaries(ctx context.Context) ([]*diaryResolver, error) {
-	diaries, err := loader.LoadDiariesByTagID(ctx, u.user.ID)
+	diaries, err := loader.LoadDiariesByTagID(ctx, t.tag.ID)
 	if err != nil {
 		return nil, err
 	}

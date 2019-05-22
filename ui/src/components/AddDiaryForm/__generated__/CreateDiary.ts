@@ -18,6 +18,7 @@ export interface CreateDiary {
 
 export interface CreateDiaryVariables {
   name: string;
+  tags: string[];
 }
 
 /* tslint:disable */

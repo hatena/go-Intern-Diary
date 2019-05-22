@@ -7,9 +7,14 @@
 // GraphQL query operation: GetDiary
 // ====================================================
 
+export interface GetDiary_getDiary_tags {
+  tag_name: string;
+}
+
 export interface GetDiary_getDiary {
   id: string;
   name: string;
+  tags: GetDiary_getDiary_tags[];
 }
 
 export interface GetDiary {

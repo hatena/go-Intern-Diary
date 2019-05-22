@@ -58,6 +58,7 @@ CREATE TABLE tag (
 
     `tag_name` VARCHAR(255) NOT NULL,
     `category_id` BIGINT UNSIGNED NOT NULL,
+    
     `created_at` DATETIME(6) NOT NULL,
     `updated_at` DATETIME(6) NOT NULL,
 
@@ -69,6 +70,7 @@ CREATE TABLE category (
     `id` BIGINT UNSIGNED NOT NULL,
 
     `category_name` VARCHAR(255) NOT NULL,
+
     `created_at` DATETIME(6) NOT NULL,
     `updated_at` DATETIME(6) NOT NULL,
     PRIMARY KEY (id)

@@ -1,7 +1,7 @@
 import React from "react"
 import { Mutation } from "react-apollo";
 
-import {DeleteArticle, DeleteArticleVariables} from "../__generated__/DeleteArticle"
+import {DeleteArticle, DeleteArticleVariables} from "./__generated__/DeleteArticle"
 import { Article, PageInfo, deleteArticle, deleteUpdateArticle } from "./container"
 
 interface ArticleItemProps {

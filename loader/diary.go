@@ -49,6 +49,18 @@ func LoadDiariesByUserID(ctx context.Context, id uint64) ([]*model.Diary, error)
 	return data.([]*model.Diary), nil
 }
 
+func LoadDiariesByTagID(ctx context.Context, id uint64) ([]*model.Diary, error) {
+	ldr, err := getLoader(ctx, diaryLoaderKey)
+	if err != nil {
+		return nil, err
+	}
+	data, err := ldr.Load(ctx, tagIDKey{id: id})()
+	if err != nil {
+		return nil, err
+	}
+	return data.([]*model.Diary), nil
+}
+
 func newDiaryLoader(app service.DiaryApp) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		results := make([]*dataloader.Result, len(keys))

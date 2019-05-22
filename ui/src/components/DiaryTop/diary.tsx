@@ -1,9 +1,11 @@
 import React from "react";
 import {Query} from "react-apollo";
-import {Link} from "react-router-dom"
 
-import {GetDiary, GetDiaryVariables} from "../__generated__/GetDiary"
+import {GetDiary, GetDiaryVariables} from "./__generated__/GetDiary"
 import {query} from "./container"
+import {ToAddArtilce} from "./toAddArticle"
+import {DiaryTag} from "./diaryTag"
+import {Tag} from "./container"
 
 interface RouteProps {
     diaryId: string;
@@ -20,9 +22,10 @@ export const Diary: React.StatelessComponent<RouteProps> = ({diaryId}) => (
                     return <p className="loading">Loading</p>
                 }
                 const {data} = result;
-
+                const tags = stringListToTagList(data!.getDiary.tags.map(tag => tag.tag_name))
                 return ( <div>
                             <h1>{data!.getDiary.name}</h1>
+                            <DiaryTag tags={tags} />
                             <ToAddArtilce diaryId={data!.getDiary.id} />
                         </div>
                 )
@@ -31,14 +34,12 @@ export const Diary: React.StatelessComponent<RouteProps> = ({diaryId}) => (
     </div>
 )
 
-interface ToAddArticlePorps {
-    diaryId: string
-}
 
-const ToAddArtilce: React.StatelessComponent<ToAddArticlePorps> = ({diaryId}) => {
-    return (
-        <div>
-            <Link to={`/diaries/${diaryId}/add`}>新規記事をポスト</Link>
-        </div>
-    )
+const stringListToTagList = (stringList: string[]): Tag[] => {
+    var tagList: Tag[] = []
+    stringList.forEach(str => {
+        const tag: Tag = {name: str}
+        tagList.push(tag)
+    });
+    return tagList
 }

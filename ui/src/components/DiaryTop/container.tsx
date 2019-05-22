@@ -4,11 +4,15 @@ import gql from "graphql-tag";
 
 import {Diary} from "./diary"
 import {ListArticlesContainer} from "../ListPagingArticles/container"
+import {DiaryTag} from "./diaryTag"
 
 export const diaryFragment = gql`
     fragment DiaryFragment on Diary {
         id
         name
+        tags {
+            tag_name
+        }
     }
 `
 
@@ -20,6 +24,10 @@ export const query = gql`
     }
     ${diaryFragment}
 `
+
+export type Tag = {
+    name: string
+}
 
 interface RouteProps {
     diaryId: string

@@ -2,7 +2,7 @@ import React from "react"
 import {Query} from "react-apollo"
 
 import {DiaryList} from "../DiaryList/diaryList"
-import{ GetVisitor } from "../__generated__/GetVisitor"
+import{ GetVisitor } from "./__generated__/GetVisitor"
 import { CreateDiaryFormContainer} from "../AddDiaryForm/container"
 import { query } from "./container"
 
