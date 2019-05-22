@@ -22,10 +22,6 @@ func (r *repository) ListTagsByIDs(tagIDs []uint64) ([]*model.Tag, error) {
 	return tags, err
 }
 func (r *repository) ListTagsByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.Tag, error) {
-	if len(diaryIDs) == 0 {
-		panic("diaryIDが0個です")
-		return nil, nil
-	}
 	query, args, err := sqlx.In(
 		`SELECT tag.id, tag_name, category_id, diary_id FROM tag
 			JOIN diary_tag ON diary_tag.tag_id = tag.id
@@ -47,9 +43,6 @@ func (r *repository) ListTagsByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.
 		var diaryID uint64
 		rows.Scan(&tag.ID, &tag.TagName, &tag.CategoryID, &diaryID)
 		tags[diaryID] = append(tags[diaryID], &tag)
-	}
-	if len(tags) == 0 {
-		panic("結果が０です")
 	}
 	return tags, nil
 }

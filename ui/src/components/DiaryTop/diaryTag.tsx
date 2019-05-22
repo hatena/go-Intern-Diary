@@ -8,8 +8,10 @@ interface DiaryTagProps {
 export const DiaryTag: React.StatelessComponent<DiaryTagProps> = ({tags}) => {
     return (
         <div className="DiaryTag">
+            <h3>この日記のタグ</h3>
+            {(tags.length == 0) && <span>タグがありません</span>}
             {tags.map(tag => 
-                <span key={tag.name}>tag.name </span>)}
+                <span key={tag.name}>{tag.name} </span>)}
         </div>
     )
 }

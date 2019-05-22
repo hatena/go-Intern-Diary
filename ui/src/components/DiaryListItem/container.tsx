@@ -5,7 +5,7 @@ import { MutationUpdaterFn } from "apollo-client";
 
 import { query } from "../UserTop/container"
 import{ GetVisitor } from "../UserTop/__generated__/GetVisitor"
-import { DeleteDiary } from "../__generated__/DeleteDiary"
+import { DeleteDiary } from "./__generated__/DeleteDiary"
 import { DeleteDiaryForm } from "./deleteDiary";
 
 export const deleteDiary = gql`

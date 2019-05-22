@@ -78,9 +78,11 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
     private handleSubmit = (create: () => void) => (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         create()
+        const tags: Tag[] = []
         this.setState({
             name: "",
             tagName: "",
+            tags: tags
         })
     }
 
