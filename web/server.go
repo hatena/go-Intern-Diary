@@ -174,7 +174,7 @@ func (s *server) signupHandler() http.Handler {
 			Value:   token,
 			Expires: expiresAt,
 		})
-		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
+		http.Redirect(w, r, "/spa", http.StatusSeeOther)
 	})
 }
 
@@ -218,7 +218,7 @@ func (s *server) signinHandler() http.Handler {
 			Value:   token,
 			Expires: expiresAt,
 		})
-		http.Redirect(w, r, "/diaries", http.StatusSeeOther)
+		http.Redirect(w, r, "/spa", http.StatusSeeOther)
 	})
 }
 

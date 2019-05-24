@@ -3,7 +3,7 @@ import gql from "graphql-tag"
 import { MutationUpdaterFn } from "apollo-client";
 
 import {AritlceListWithPagination} from "./articleListWithPagination"
-import {DeleteArticle} from "../__generated__/DeleteArticle"
+import {DeleteArticle} from "./__generated__/DeleteArticle"
 import { ListArticles} from "./__generated__/ListArticles";
 
 export const listArticlesFragment = gql`
