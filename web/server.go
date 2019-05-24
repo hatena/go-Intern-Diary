@@ -103,9 +103,7 @@ func (s *server) Handler() http.Handler {
 				loggingMiddleware(headerMiddleware(resolver.NewHandler(s.app))))))
 
 	router.UsingContext().Handler("POST", "/signout",
-		s.attachLoaderMiddleware(
-			s.resolveUserMiddleware(
-				loggingMiddleware(headerMiddleware(s.signoutHandler())))))
+		loggingMiddleware(headerMiddleware(s.signoutHandler())))
 
 	return router
 }
