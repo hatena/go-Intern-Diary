@@ -73,7 +73,7 @@ func (s *server) Handler() http.Handler {
 	handle("GET", "/signup", s.willSignupHandler())
 	handle("POST", "/signup", s.signupHandler())
 
-	handle("POST", "/signout", s.signoutHandler())
+	// handle("POST", "/signout", s.signoutHandler())
 	handle("GET", "/signin", s.willSigninHandler())
 	handle("POST", "/signin", s.signinHandler())
 
@@ -101,6 +101,11 @@ func (s *server) Handler() http.Handler {
 		s.attachLoaderMiddleware(
 			s.resolveUserMiddleware(
 				loggingMiddleware(headerMiddleware(resolver.NewHandler(s.app))))))
+
+	router.UsingContext().Handler("POST", "/signout",
+		s.attachLoaderMiddleware(
+			s.resolveUserMiddleware(
+				loggingMiddleware(headerMiddleware(s.signoutHandler())))))
 
 	return router
 }
