@@ -72,7 +72,7 @@ func (r *repository) getTagIDsByNames(tagNames []string) (map[string]uint64, err
 	}
 	query, args, err := sqlx.In(
 		`SELECT id, tag_name FROM tag
-		WHERE id IN (?)
+		WHERE tag_name IN (?)
 		`,
 		tagNames,
 	)

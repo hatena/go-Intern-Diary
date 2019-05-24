@@ -63,6 +63,7 @@ CREATE TABLE tag (
     `updated_at` DATETIME(6) NOT NULL,
 
     PRIMARY KEY (id),
+    UNIQUE KEY `tag_category_unique_index` (`tag_name`,`category_id`),
     KEY(tag_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
