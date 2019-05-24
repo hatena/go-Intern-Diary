@@ -299,7 +299,7 @@ func (r *repository) ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.D
 		return nil, nil
 	}
 	query, args, err := sqlx.In(
-		`SELECT id, name, user_id, updated_at, tag_id FROM diary
+		`SELECT diary.id, diary.name, user_id, diary.updated_at, tag_id FROM diary
 		JOIN diary_tag ON diary.id = diary_tag.diary_id
 		WHERE tag_id IN (?)
 		`, tagIDs,
@@ -320,4 +320,54 @@ func (r *repository) ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.D
 		diaries[tagID] = append(diaries[tagID], &diary)
 	}
 	return diaries, nil
+}
+
+func (r *repository) ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error) {
+	tagsOfDiary, err := r.getTags(diaryID)
+	if err != nil {
+		return nil, err
+	}
+	diaries, err := r.sameTagDiaries(tagsOfDiary, diaryID)
+	if err != nil {
+		return nil, err
+	}
+	return diaries, nil
+}
+
+func (r *repository) sameTagDiaries(tags []*model.Tag, diaryID uint64) ([]*model.Diary, error) {
+	if len(tags) == 0 {
+		return nil, nil
+	}
+	tagIDs := make([]uint64, len(tags))
+	for i, tag := range tags {
+		tagIDs[i] = tag.ID
+	}
+	query, args, err := sqlx.In(
+		`SELECT diary.id, diary.name, diary.user_id, diary.updated_at FROM diary
+			JOIN diary_tag ON diary.id = diary_tag.diary_id
+			JOIN user ON diary.user_id = user.id
+			WHERE tag_id IN (?) AND diary.id != ?
+			ORDER BY diary.updated_at DESC
+		`, tagIDs, diaryID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	var diaries []*model.Diary
+	err = r.db.Select(&diaries, query, args...)
+	return diaries, err
+}
+
+func (r *repository) getTags(diaryID uint64) ([]*model.Tag, error) {
+	var tagsOfDiary []*model.Tag
+	err := r.db.Select(&tagsOfDiary, `
+		SELECT tag.id, tag_name, category_id FROM tag
+			JOIN diary_tag ON tag.id = diary_tag.tag_id
+			WHERE diary_id = ?
+			`, diaryID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return tagsOfDiary, nil
 }

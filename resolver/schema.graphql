@@ -8,6 +8,7 @@ type Query {
     getUser(userId: ID!): User!
     getDiary(diaryId: ID!): Diary!
     listArticles(diaryId: ID!, page: Int!): ArticleWithPageInfo!
+    listRecommededDiaries(diaryId: ID!): [Diary!]!
 }
 
 type Mutation {
@@ -29,6 +30,7 @@ type Diary {
     name: String!
     articles: [Article!]!
     tags: [Tag!]!
+    user: User!
 }
 
 type Article {

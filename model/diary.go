@@ -8,3 +8,11 @@ type Diary struct {
 	UserID    uint64    `db:"user_id"`
 	UpdatedAt time.Time `db:"updated_at"`
 }
+
+type RecommendedDiary struct {
+	DiaryID   uint64
+	DiaryName string
+	UpdatedAt time.Time
+	UserID    uint64
+	UserName  string
+}

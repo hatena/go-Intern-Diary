@@ -123,3 +123,33 @@ func (r *repository) FindUserByToken(token string) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func (r *repository) ListUsersByDiaryIDs(diaryIDs []uint64) (map[uint64]*model.User, error) {
+	if len(diaryIDs) == 0 {
+		return nil, nil
+	}
+	type UserWithDiaryID struct {
+		id      uint64
+		name    string
+		diaryID uint64
+	}
+	userWithDiaryIDs := make([]*UserWithDiaryID, 0, len(diaryIDs))
+	query, args, err := sqlx.In(
+		`SELECT user.id, user.name diary.id FROM user
+			JOIN diary ON user.id = diary.user_id
+			WHERE diary.id IN (?)
+			`, diaryIDs,
+	)
+	if err != nil {
+		return nil, err
+	}
+	err = r.db.Select(&userWithDiaryIDs, query, args...)
+	users := make(map[uint64]*model.User, len(diaryIDs))
+	for _, u := range userWithDiaryIDs {
+		users[u.diaryID] = &model.User{
+			ID:   u.id,
+			Name: u.name,
+		}
+	}
+	return users, err
+}

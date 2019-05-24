@@ -14,6 +14,7 @@ type Repository interface {
 	FindUserByName(name string) (*model.User, error)
 	FindUserByID(id uint64) (*model.User, error)
 	ListUsersByIDs(userIDs []uint64) ([]*model.User, error)
+	ListUsersByDiaryIDs(diaryIDs []uint64) (map[uint64]*model.User, error)
 	FindPasswordHashByName(name string) (string, error)
 	CreateNewToken(userID uint64, token string, expiresAt time.Time) error
 	FindUserByToken(token string) (*model.User, error)
@@ -37,6 +38,8 @@ type Repository interface {
 	ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.Diary, error)
 	ListTagsByIDs(tagIDs []uint64) ([]*model.Tag, error)
 	ListTagsByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.Tag, error)
+
+	ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error)
 
 	Close() error
 }

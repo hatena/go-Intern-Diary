@@ -59,3 +59,11 @@ func (d *diaryResolver) Tags(ctx context.Context) ([]*tagResolver, error) {
 	}
 	return tagResolvers, nil
 }
+
+func (d *diaryResolver) User(ctx context.Context) (*userResolver, error) {
+	user, err := loader.LoadUserByDiaryID(ctx, d.diary.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &userResolver{user: user}, nil
+}

@@ -70,3 +70,7 @@ func (app *diaryApp) CreateNewToken(userID uint64, expiresAt time.Time) (string,
 func (app *diaryApp) FindUserByToken(token string) (*model.User, error) {
 	return app.repo.FindUserByToken(token)
 }
+
+func (app *diaryApp) ListUsersByDiaryIDs(diaryIDs []uint64) (map[uint64]*model.User, error) {
+	return app.repo.ListUsersByDiaryIDs(diaryIDs)
+}

@@ -3,6 +3,7 @@ package resolver
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/hatena/go-Intern-Diary/model"
@@ -25,6 +26,7 @@ type Resolver interface {
 		DiaryID string
 		Page    int32
 	}) (*articlesWithPageInfoResolver, error)
+	ListRecommededDiaries(context.Context, struct{ DiaryID string }) ([]*diaryResolver, error)
 }
 
 func newResolver(app service.DiaryApp) Resolver {
@@ -179,5 +181,31 @@ func (r *resolver) ListArticles(ctx context.Context, args struct {
 		PageInfo: pageInfo,
 	}
 	return &articlesWithPageInfoResolver{awp: &awp}, nil
+}
 
+func (r *resolver) ListRecommededDiaries(ctx context.Context, args struct{ DiaryID string }) ([]*diaryResolver, error) {
+	diaryID, err := strconv.ParseUint(args.DiaryID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	recommendedDiaries, err := r.app.ListRecommendedDiaries(diaryID)
+	if err != nil {
+		return nil, err
+	}
+	drs := make([]*diaryResolver, len(recommendedDiaries))
+	for i, rd := range recommendedDiaries {
+		diary := &model.Diary{
+			ID:        rd.ID,
+			Name:      rd.Name,
+			UserID:    rd.UserID,
+			UpdatedAt: rd.UpdatedAt,
+		}
+		drs[i] = &diaryResolver{diary: diary}
+	}
+	log.Println("#####################################")
+	log.Println(len(drs))
+	log.Println(drs[0].diary.UserID)
+	log.Println("#####################################")
+
+	return drs, nil
 }

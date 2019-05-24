@@ -37,24 +37,48 @@ func LoadUser(ctx context.Context, id uint64) (*model.User, error) {
 	return data.(*model.User), nil
 }
 
+func LoadUserByDiaryID(ctx context.Context, id uint64) (*model.User, error) {
+	ldr, err := getLoader(ctx, userLoaderKey)
+	if err != nil {
+		return nil, err
+	}
+	data, err := ldr.Load(ctx, diaryIDKey{id: id})()
+	if err != nil {
+		return nil, err
+	}
+	return data.(*model.User), nil
+}
+
 func newUserLoader(app service.DiaryApp) dataloader.BatchFunc {
-	return func(ctx context.Context, userIDKeys dataloader.Keys) []*dataloader.Result {
-		results := make([]*dataloader.Result, len(userIDKeys))
-		userIDs := make([]uint64, len(userIDKeys))
-		for i, key := range userIDKeys {
-			userIDs[i] = key.(userIDKey).id
-		}
-		users, _ := app.ListUsersByIDs(userIDs)
-		for i, userID := range userIDs {
-			results[i] = &dataloader.Result{Data: nil, Error: nil}
-			for _, user := range users {
-				if userID == user.ID {
-					results[i].Data = user
-					continue
-				}
+	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+		results := make([]*dataloader.Result, len(keys))
+		userIDs := make([]uint64, len(keys))
+		diaryIDs := make([]uint64, len(keys))
+		for _, key := range keys {
+			switch key := key.(type) {
+			case userIDKey:
+				userIDs = append(userIDs, key.id)
+			case diaryIDKey:
+				diaryIDs = append(diaryIDs, key.id)
 			}
-			if results[i].Data == nil {
-				results[i].Error = errors.New("user not found")
+		}
+		usersByIDs, _ := app.ListUsersByIDs(userIDs)
+		usersByDiaryIDs, _ := app.ListUsersByDiaryIDs(diaryIDs)
+		for i, key := range keys {
+			results[i] = &dataloader.Result{Data: nil, Error: nil}
+			switch key := key.(type) {
+			case userIDKey:
+				for _, user := range usersByIDs {
+					if key.id == user.ID {
+						results[i].Data = user
+						continue
+					}
+				}
+				if results[i].Data == nil {
+					results[i].Error = errors.New("user not found")
+				}
+			case diaryIDKey:
+				results[i].Data = usersByDiaryIDs[key.id]
 			}
 		}
 		return results

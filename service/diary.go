@@ -36,3 +36,7 @@ func (app *diaryApp) ListDiariesByUserIDs(userIDs []uint64) (map[uint64][]*model
 func (app *diaryApp) ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.Diary, error) {
 	return app.repo.ListDiariesByTagIDs(tagIDs)
 }
+
+func (app *diaryApp) ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error) {
+	return app.repo.ListRecommendedDiaries(diaryID)
+}
