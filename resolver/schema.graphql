@@ -12,7 +12,7 @@ type Query {
 }
 
 type Mutation {
-    createDiary(name: String!, tags: [String!]!): Diary!
+    createDiary(name: String!, tags: [TagWithCategory!]!): Diary!
     deleteDiary(diaryId: ID!): Boolean!
     postArticle(diaryId: ID!, title: String!, content: String!): Article!
     updateArticle(articleId: ID!, title: String!, content: String!) : Article!
@@ -58,4 +58,9 @@ type Tag {
     category_id: ID!
     tag_name: String!
     diaries: [Diary!]!
+}
+
+type TagWithCategory {
+    tag_name: String!
+    category_id: Int!
 }
