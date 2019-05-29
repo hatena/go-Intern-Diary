@@ -67,8 +67,7 @@ func (r *resolver) GetDiary(ctx context.Context, args struct{ DiaryID string }) 
 	if err != nil {
 		return nil, err
 	}
-	user := currentUser(ctx)
-	diary, err := r.app.FindDiaryByID(diaryID, user.ID)
+	diary, err := r.app.FindDiaryByID(diaryID)
 	if err != nil {
 		return nil, err
 	}

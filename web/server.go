@@ -307,7 +307,7 @@ func (s *server) articlesHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
+		diary, err := s.app.FindDiaryByID(diaryID)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
@@ -340,7 +340,7 @@ func (s *server) willAddArticleHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
+		diary, err := s.app.FindDiaryByID(diaryID)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
@@ -390,7 +390,7 @@ func (s *server) articleHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		diary, err := s.app.FindDiaryByID(diaryID, user.ID)
+		diary, err := s.app.FindDiaryByID(diaryID)
 		if err != nil {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return

@@ -225,13 +225,13 @@ func (r *repository) DeleteDiary(userID, diaryID uint64) (err error) {
 	return
 }
 
-func (r *repository) FindDiaryByID(diaryID, userID uint64) (*model.Diary, error) {
+func (r *repository) FindDiaryByID(diaryID uint64) (*model.Diary, error) {
 	var diary model.Diary
 	err := r.db.Get(
 		&diary,
 		`SELECT id, name FROM diary
-			WHERE id = ? AND user_id = ? LIMIT 1`,
-		diaryID, userID,
+			WHERE id = ? LIMIT 1`,
+		diaryID,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

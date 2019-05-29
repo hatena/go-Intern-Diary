@@ -37,6 +37,7 @@ export const AritlceListWithPagination: React.StatelessComponent<ArticleListWith
                 
                 return (
                     <div>
+                        <h2>記事一覧</h2>
                         <ArticleList diaryId={diaryId} pageInfo={pageInfo} articles={articles} />
                         <Pagination pageInfo={pageInfo} diaryId={diaryId} handlePushPageButton={handlePushPageButton} />
                     </div>
