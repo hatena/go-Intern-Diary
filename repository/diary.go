@@ -347,7 +347,7 @@ func (r *repository) sameTagDiaries(tags []*model.Tag, diaryID uint64) ([]*model
 			JOIN diary_tag ON diary.id = diary_tag.diary_id
 			JOIN user ON diary.user_id = user.id
 			WHERE tag_id IN (?) AND diary.id != ?
-			ORDER BY diary.updated_at DESC
+			ORDER BY diary.updated_at DESC LIMIT 3
 		`, tagIDs, diaryID,
 	)
 	if err != nil {
