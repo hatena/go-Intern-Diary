@@ -15,6 +15,7 @@ export interface GetDiary_getDiary {
   id: string;
   name: string;
   tags: GetDiary_getDiary_tags[];
+  canEdit: boolean;
 }
 
 export interface GetDiary {

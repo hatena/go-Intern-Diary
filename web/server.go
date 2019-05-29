@@ -365,7 +365,7 @@ func (s *server) addArticleHandler() http.Handler {
 			return
 		}
 		title, content := r.FormValue("title"), r.FormValue("content")
-		if _, err := s.app.CreateNewArticle(diaryID, title, content); err != nil {
+		if _, err := s.app.CreateNewArticle(diaryID, user.ID, title, content); err != nil {
 			http.Error(w, "failed to create article", http.StatusInternalServerError)
 			return
 		}
@@ -425,7 +425,7 @@ func (s *server) deleteArticleHandler() http.Handler {
 			http.Error(w, "invalid diary id", http.StatusBadRequest)
 			return
 		}
-		if err := s.app.DeleteArticle(articleID); err != nil {
+		if err := s.app.DeleteArticle(articleID, user.ID); err != nil {
 			http.Error(w, fmt.Sprintf("failed to delete diary: %+v", err), http.StatusBadRequest)
 			return
 		}

@@ -15,6 +15,7 @@ export interface DiaryFragment {
   id: string;
   name: string;
   tags: DiaryFragment_tags[];
+  canEdit: boolean;
 }
 
 /* tslint:disable */

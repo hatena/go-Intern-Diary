@@ -49,7 +49,10 @@ func (r *repository) getArticleTotalCount(diaryID uint64) (int, error) {
 	return count, nil
 }
 
-func (r *repository) CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error) {
+func (r *repository) CreateNewArticle(diaryID, userID uint64, title string, content string) (*model.Article, error) {
+	if err := r.validateUserForDiaryMutation(diaryID, userID); err != nil {
+		return nil, err
+	}
 	id, err := r.generateID()
 	if err != nil {
 		return nil, err
@@ -83,11 +86,12 @@ func (r *repository) FindArticleByID(articleID, diaryID uint64) (*model.Article,
 	return &article, nil
 }
 
-func (r *repository) DeleteArticle(articleID uint64) (err error) {
+func (r *repository) DeleteArticle(articleID, userID uint64) (err error) {
 	_, err = r.db.Exec(
-		`DELETE FROM article
-			WHERE id = ?`,
-		articleID,
+		`DELETE article FROM article
+			JOIN diary ON article.diary_id = diary.id
+			WHERE article.id = ? AND diary.user_id = ?`,
+		articleID, userID,
 	)
 	return
 }
@@ -141,7 +145,7 @@ func (r *repository) ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*mo
 	return articles, nil
 }
 
-func (r *repository) UpdateArticle(articleID uint64, title, content string) (*model.Article, error) {
+func (r *repository) UpdateArticle(articleID, userID uint64, title, content string) (*model.Article, error) {
 	var article model.Article
 	err := r.db.Get(&article,
 		`SELECT id, title, content, diary_id, updated_at FROM article
@@ -156,9 +160,10 @@ func (r *repository) UpdateArticle(articleID uint64, title, content string) (*mo
 	}
 	now := time.Now()
 	_, err = r.db.Exec(
-		`UPDATE article SET title = ?, content = ?, updated_at = ?
-			WHERE id = ?`,
-		title, content, now, articleID,
+		`UPDATE article SET article.title = ?, article.content = ?, article.updated_at = ?
+			FROM article JOIN diary ON article.diary_id = diary.id
+			WHERE article.id = ? AND diary.user_id = ?`,
+		title, content, now, articleID, userID,
 	)
 	if err != nil {
 		return nil, err

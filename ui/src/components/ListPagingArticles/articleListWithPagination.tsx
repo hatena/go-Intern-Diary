@@ -9,12 +9,13 @@ import { ArticleList } from "./articleList";
 
 
 interface ArticleListWithPaginationProps {
-    diaryId: string
-    page: number
-    handlePushPageButton: (page: number) => void
+    diaryId: string;
+    page: number;
+    handlePushPageButton: (page: number) => void;
+    canEdit: boolean;
 }
 
-export const AritlceListWithPagination: React.StatelessComponent<ArticleListWithPaginationProps> = ({diaryId, page, handlePushPageButton}) => {
+export const AritlceListWithPagination: React.StatelessComponent<ArticleListWithPaginationProps> = ({diaryId, page, handlePushPageButton, canEdit}) => {
 
     return (
         <Query<ListArticles, ListArticlesVariables>
@@ -38,7 +39,7 @@ export const AritlceListWithPagination: React.StatelessComponent<ArticleListWith
                 return (
                     <div>
                         <h2>記事一覧</h2>
-                        <ArticleList diaryId={diaryId} pageInfo={pageInfo} articles={articles} />
+                        <ArticleList diaryId={diaryId} pageInfo={pageInfo} articles={articles} canEdit={canEdit}/>
                         <Pagination pageInfo={pageInfo} diaryId={diaryId} handlePushPageButton={handlePushPageButton} />
                     </div>
                 )

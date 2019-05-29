@@ -3,8 +3,6 @@ import {RouteComponentProps} from "react-router";
 import gql from "graphql-tag";
 
 import {Diary} from "./diary"
-import {ListArticlesContainer} from "../ListPagingArticles/container"
-import {RecommendedDiaryListContainer} from "../RecommendedDiaryList/container"
 
 export const diaryFragment = gql`
     fragment DiaryFragment on Diary {
@@ -13,6 +11,7 @@ export const diaryFragment = gql`
         tags {
             tag_name
         }
+        canEdit
     }
 `
 
@@ -30,14 +29,12 @@ export type Tag = {
 }
 
 interface RouteProps {
-    diaryId: string
+    diaryId: string;
     page?: string
 }
 
 export const DiaryTopContainer: React.StatelessComponent<RouteComponentProps<RouteProps>> = ({match}) => (
     <div className="DiaryTop">
-        <Diary diaryId={match.params.diaryId} />
-        <RecommendedDiaryListContainer diaryId={match.params.diaryId} />
-        <ListArticlesContainer diaryId={match.params.diaryId} page={match.params.page} />
+        <Diary diaryId={match.params.diaryId} page={match.params.page}/>
     </div>
 )

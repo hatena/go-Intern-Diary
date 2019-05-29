@@ -7,6 +7,7 @@ type Diary struct {
 	Name      string    `db:"name"`
 	UserID    uint64    `db:"user_id"`
 	UpdatedAt time.Time `db:"updated_at"`
+	CanEdit   bool
 }
 
 type RecommendedDiary struct {

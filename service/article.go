@@ -20,16 +20,16 @@ func (app *diaryApp) ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*
 	return articles, pageInfo, nil
 }
 
-func (app *diaryApp) CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error) {
-	return app.repo.CreateNewArticle(diaryID, title, content)
+func (app *diaryApp) CreateNewArticle(diaryID, userID uint64, title string, content string) (*model.Article, error) {
+	return app.repo.CreateNewArticle(diaryID, userID, title, content)
 }
 
 func (app *diaryApp) FindArticleByID(articleID, diaryID uint64) (*model.Article, error) {
 	return app.repo.FindArticleByID(articleID, diaryID)
 }
 
-func (app *diaryApp) DeleteArticle(articleID uint64) error {
-	return app.repo.DeleteArticle(articleID)
+func (app *diaryApp) DeleteArticle(articleID, userID uint64) error {
+	return app.repo.DeleteArticle(articleID, userID)
 }
 
 func (app *diaryApp) ListArticlesByIDs(articleIDs []uint64) ([]*model.Article, error) {
@@ -40,6 +40,6 @@ func (app *diaryApp) ListArticlesByDiaryIDs(diaryIDs []uint64) (map[uint64][]*mo
 	return app.repo.ListArticlesByDiaryIDs(diaryIDs)
 }
 
-func (app *diaryApp) UpdateArticle(articleID uint64, title, content string) (*model.Article, error) {
-	return app.repo.UpdateArticle(articleID, title, content)
+func (app *diaryApp) UpdateArticle(articleID, userID uint64, title, content string) (*model.Article, error) {
+	return app.repo.UpdateArticle(articleID, userID, title, content)
 }

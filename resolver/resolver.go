@@ -63,6 +63,10 @@ func (r *resolver) GetUser(ctx context.Context, args struct{ UserID string }) (*
 }
 
 func (r *resolver) GetDiary(ctx context.Context, args struct{ DiaryID string }) (*diaryResolver, error) {
+	user := currentUser(ctx)
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
 	diaryID, err := strconv.ParseUint(args.DiaryID, 10, 64)
 	if err != nil {
 		return nil, err
@@ -73,6 +77,9 @@ func (r *resolver) GetDiary(ctx context.Context, args struct{ DiaryID string }) 
 	}
 	if diary == nil {
 		return nil, errors.New("diary not found")
+	}
+	if diary.UserID == user.ID {
+		diary.CanEdit = true
 	}
 	return &diaryResolver{diary: diary}, nil
 }
@@ -117,7 +124,7 @@ func (r *resolver) PostArticle(ctx context.Context, args struct{ DiaryID, Title,
 	if err != nil {
 		return nil, err
 	}
-	article, err := r.app.CreateNewArticle(diaryID, args.Title, args.Content)
+	article, err := r.app.CreateNewArticle(diaryID, user.ID, args.Title, args.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +140,7 @@ func (r *resolver) DeleteArticle(ctx context.Context, args struct{ ArticleID, Di
 	if err != nil {
 		return false, err
 	}
-	err = r.app.DeleteArticle(articleID)
+	err = r.app.DeleteArticle(articleID, user.ID)
 	if err != nil {
 		return false, err
 	}
@@ -149,7 +156,7 @@ func (r *resolver) UpdateArticle(ctx context.Context, args struct{ ArticleID, Ti
 	if err != nil {
 		return nil, err
 	}
-	article, err := r.app.UpdateArticle(articleID, args.Title, args.Content)
+	article, err := r.app.UpdateArticle(articleID, user.ID, args.Title, args.Content)
 	if err != nil {
 		return nil, err
 	}

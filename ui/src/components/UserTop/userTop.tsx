@@ -23,7 +23,7 @@ export const UserTop: React.StatelessComponent = () => (
                 }
                 const { data } = result;
                 return <>
-                    {<CreateDiaryFormContainer />}
+                    <CreateDiaryFormContainer />
                     <DiaryList user={data!.visitor} />
                 </>;
             }}

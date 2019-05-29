@@ -67,3 +67,7 @@ func (d *diaryResolver) User(ctx context.Context) (*userResolver, error) {
 	}
 	return &userResolver{user: user}, nil
 }
+
+func (d *diaryResolver) CanEdit(ctx context.Context) bool {
+	return d.diary.CanEdit
+}

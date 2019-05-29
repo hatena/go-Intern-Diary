@@ -3,13 +3,14 @@ import {Link} from "react-router-dom"
 
 
 interface ToAddArticlePorps {
-    diaryId: string
+    diaryId: string;
+    canEdit: boolean;
 }
 
-export const ToAddArtilce: React.StatelessComponent<ToAddArticlePorps> = ({diaryId}) => {
+export const ToAddArtilce: React.StatelessComponent<ToAddArticlePorps> = ({diaryId, canEdit}) => {
     return (
         <div>
-            <Link to={`/diaries/${diaryId}/add`}>新規記事をポスト</Link>
+            {canEdit && <Link to={`/diaries/${diaryId}/add`}>新規記事をポスト</Link>}
         </div>
     )
 }

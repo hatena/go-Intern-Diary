@@ -6,12 +6,15 @@ import {query} from "./container"
 import {ToAddArtilce} from "./toAddArticle"
 import {DiaryTag} from "./diaryTag"
 import {Tag} from "./container"
+import {ListArticlesContainer} from "../ListPagingArticles/container"
+import {RecommendedDiaryListContainer} from "../RecommendedDiaryList/container"
 
 interface RouteProps {
     diaryId: string;
+    page?: string;
 }
 
-export const Diary: React.StatelessComponent<RouteProps> = ({diaryId}) => (
+export const Diary: React.StatelessComponent<RouteProps> = ({diaryId, page}) => (
     <div className="Diary">
         <Query<GetDiary, GetDiaryVariables> query={query} variables={{ diaryId: diaryId}}>
             {result => {
@@ -23,10 +26,13 @@ export const Diary: React.StatelessComponent<RouteProps> = ({diaryId}) => (
                 }
                 const {data} = result;
                 const tags = stringListToTagList(data!.getDiary.tags.map(tag => tag.tag_name))
+                const canEdit = data!.getDiary.canEdit
                 return ( <div>
                             <h1>{data!.getDiary.name}</h1>
                             <DiaryTag tags={tags} />
-                            <ToAddArtilce diaryId={data!.getDiary.id} />
+                            <ToAddArtilce diaryId={data!.getDiary.id} canEdit={canEdit}/>
+                            <RecommendedDiaryListContainer diaryId={diaryId} />
+                            <ListArticlesContainer diaryId={diaryId} page={page} canEdit={canEdit}/>           
                         </div>
                 )
             }}

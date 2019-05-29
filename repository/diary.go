@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/hatena/go-Intern-Diary/model"
@@ -229,7 +230,7 @@ func (r *repository) FindDiaryByID(diaryID uint64) (*model.Diary, error) {
 	var diary model.Diary
 	err := r.db.Get(
 		&diary,
-		`SELECT id, name FROM diary
+		`SELECT id, name, user_id FROM diary
 			WHERE id = ? LIMIT 1`,
 		diaryID,
 	)
@@ -370,4 +371,15 @@ func (r *repository) getTags(diaryID uint64) ([]*model.Tag, error) {
 		return nil, err
 	}
 	return tagsOfDiary, nil
+}
+
+func (r *repository) validateUserForDiaryMutation(diaryID, userID uint64) error {
+	diary, err := r.FindDiaryByID(diaryID)
+	if err != nil {
+		return errors.New("diary not found")
+	}
+	if userID != diary.UserID {
+		return errors.New("Unauthorized")
+	}
+	return nil
 }

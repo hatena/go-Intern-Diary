@@ -27,10 +27,10 @@ type DiaryApp interface {
 	DeleteDiary(userID, diaryID uint64) error
 	ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*model.Article, *model.PageInfo, error)
 	FindDiaryByID(diaryID uint64) (*model.Diary, error)
-	CreateNewArticle(diaryID uint64, title string, content string) (*model.Article, error)
+	CreateNewArticle(diaryID, userID uint64, title string, content string) (*model.Article, error)
 	FindArticleByID(articleID, diaryID uint64) (*model.Article, error)
-	UpdateArticle(articleID uint64, title, content string) (*model.Article, error)
-	DeleteArticle(articleID uint64) error
+	UpdateArticle(articleID, userID uint64, title, content string) (*model.Article, error)
+	DeleteArticle(articleID, userID uint64) error
 
 	ListDiariesByIDs(diaryIDs []uint64) ([]*model.Diary, error)
 	ListDiariesByUserIDs(userIDs []uint64) (map[uint64][]*model.Diary, error)

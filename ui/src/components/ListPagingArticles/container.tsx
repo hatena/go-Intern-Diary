@@ -73,12 +73,13 @@ export type PageInfo = {
 }
 
 interface ListArticlesProps {
-    diaryId: string
-    page?: string
+    diaryId: string;
+    page?: string;
+    canEdit: boolean
 }
 
 interface ListArticleState {
-    page: number
+    page: number;
 }
 
 export class ListArticlesContainer extends React.PureComponent<ListArticlesProps, ListArticleState> {
@@ -127,6 +128,7 @@ export class ListArticlesContainer extends React.PureComponent<ListArticlesProps
                     diaryId={this.props.diaryId}
                     page={this.state.page}
                     handlePushPageButton={this.handlePushPageButton}
+                    canEdit={this.props.canEdit}
                 />
             </div>
         )
