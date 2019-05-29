@@ -17,11 +17,9 @@ export const recommendedDiaryFragment = gql`
 `
 
 export const query = gql`
-    query ListRecommededDiaries($diaryId: diaryId: ID!) {
+    query ListRecommededDiaries($diaryId: ID!) {
         listRecommededDiaries(diaryId: $diaryId) {
-            diaries {
-                ...RecommendedDiaryFragment
-            }
+            ...RecommendedDiaryFragment
         }
     }
     ${recommendedDiaryFragment}
@@ -30,6 +28,7 @@ export const query = gql`
 export type RecommendedDiary = {
     id: string;
     diaryName: string;
+    tags: string[];
     userId: string;
     userName: string;
 }

@@ -129,13 +129,13 @@ func (r *repository) ListUsersByDiaryIDs(diaryIDs []uint64) (map[uint64]*model.U
 		return nil, nil
 	}
 	type UserWithDiaryID struct {
-		id      uint64
-		name    string
-		diaryID uint64
+		ID      uint64 `db:"id"`
+		Name    string `db:"name"`
+		DiaryID uint64 `db:"diary_id"`
 	}
 	userWithDiaryIDs := make([]*UserWithDiaryID, 0, len(diaryIDs))
 	query, args, err := sqlx.In(
-		`SELECT user.id, user.name diary.id FROM user
+		`SELECT user.id as id, user.name as name, diary.id as diary_id FROM user
 			JOIN diary ON user.id = diary.user_id
 			WHERE diary.id IN (?)
 			`, diaryIDs,
@@ -144,12 +144,15 @@ func (r *repository) ListUsersByDiaryIDs(diaryIDs []uint64) (map[uint64]*model.U
 		return nil, err
 	}
 	err = r.db.Select(&userWithDiaryIDs, query, args...)
+	if err != nil {
+		return nil, err
+	}
 	users := make(map[uint64]*model.User, len(diaryIDs))
 	for _, u := range userWithDiaryIDs {
-		users[u.diaryID] = &model.User{
-			ID:   u.id,
-			Name: u.name,
+		users[u.DiaryID] = &model.User{
+			ID:   u.ID,
+			Name: u.Name,
 		}
 	}
-	return users, err
+	return users, nil
 }

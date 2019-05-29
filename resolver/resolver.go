@@ -3,7 +3,6 @@ package resolver
 import (
 	"context"
 	"errors"
-	"log"
 	"strconv"
 
 	"github.com/hatena/go-Intern-Diary/model"
@@ -202,10 +201,5 @@ func (r *resolver) ListRecommededDiaries(ctx context.Context, args struct{ Diary
 		}
 		drs[i] = &diaryResolver{diary: diary}
 	}
-	log.Println("#####################################")
-	log.Println(len(drs))
-	log.Println(drs[0].diary.UserID)
-	log.Println("#####################################")
-
 	return drs, nil
 }

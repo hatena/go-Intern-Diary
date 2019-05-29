@@ -343,7 +343,7 @@ func (r *repository) sameTagDiaries(tags []*model.Tag, diaryID uint64) ([]*model
 		tagIDs[i] = tag.ID
 	}
 	query, args, err := sqlx.In(
-		`SELECT diary.id, diary.name, diary.user_id, diary.updated_at FROM diary
+		`SELECT DISTINCT diary.id, diary.name, diary.user_id, diary.updated_at FROM diary
 			JOIN diary_tag ON diary.id = diary_tag.diary_id
 			JOIN user ON diary.user_id = user.id
 			WHERE tag_id IN (?) AND diary.id != ?
