@@ -30,6 +30,14 @@ export interface RecommendedDiaryFragment {
 // START Enums and Input Objects
 //==============================================================
 
+/**
+ * 
+ */
+export interface TagWithCategoryInput {
+  tag_name: string;
+  category_id: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

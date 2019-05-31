@@ -5,6 +5,7 @@ schema {
 
 type Query {
     visitor(): User!
+    listCategories(): [Category!]!
     getUser(userId: ID!): User!
     getDiary(diaryId: ID!): Diary!
     listArticles(diaryId: ID!, page: Int!): ArticleWithPageInfo!
@@ -12,7 +13,7 @@ type Query {
 }
 
 type Mutation {
-    createDiary(name: String!, tags: [TagWithCategory!]!): Diary!
+    createDiary(name: String!, tagWithCategories: [TagWithCategoryInput!]!): Diary!
     deleteDiary(diaryId: ID!): Boolean!
     postArticle(diaryId: ID!, title: String!, content: String!): Article!
     updateArticle(articleId: ID!, title: String!, content: String!) : Article!
@@ -60,7 +61,12 @@ type Tag {
     diaries: [Diary!]!
 }
 
-type TagWithCategory {
+type Category {
+    id: Int!
+    category_name: String!
+}
+
+input TagWithCategoryInput {
     tag_name: String!
     category_id: Int!
 }

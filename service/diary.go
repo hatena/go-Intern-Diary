@@ -6,8 +6,8 @@ import (
 	"github.com/hatena/go-Intern-Diary/model"
 )
 
-func (app *diaryApp) CreateNewDiary(userID uint64, name string, tags []string) (*model.Diary, error) {
-	return app.repo.CreateNewDiary(userID, name, tags)
+func (app *diaryApp) CreateNewDiary(userID uint64, name string, tagWithCategories []*model.TagWithCategory) (*model.Diary, error) {
+	return app.repo.CreateNewDiary(userID, name, tagWithCategories)
 }
 
 func (app *diaryApp) ListDiariesByUserID(userID, page, limit uint64) ([]*model.Diary, error) {
@@ -39,4 +39,8 @@ func (app *diaryApp) ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.D
 
 func (app *diaryApp) ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error) {
 	return app.repo.ListRecommendedDiaries(diaryID)
+}
+
+func (app *diaryApp) ListCategories() []*model.Category {
+	return app.repo.ListCategories()
 }

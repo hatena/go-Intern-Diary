@@ -22,7 +22,7 @@ type DiaryApp interface {
 	CreateNewToken(userID uint64, expiresAt time.Time) (string, error)
 	FindUserByToken(token string) (*model.User, error)
 
-	CreateNewDiary(userID uint64, name string, tags []string) (*model.Diary, error)
+	CreateNewDiary(userID uint64, name string, tagWithCategories []*model.TagWithCategory) (*model.Diary, error)
 	ListDiariesByUserID(userID, page, limit uint64) ([]*model.Diary, error)
 	DeleteDiary(userID, diaryID uint64) error
 	ListArticlesByDiaryID(diaryID uint64, page, limit int) ([]*model.Article, *model.PageInfo, error)
@@ -43,6 +43,7 @@ type DiaryApp interface {
 	ListTagsByDiaryIDs(diaryIDs []uint64) (map[uint64][]*model.Tag, error)
 
 	ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error)
+	ListCategories() []*model.Category
 
 	Close() error
 }

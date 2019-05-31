@@ -14,8 +14,8 @@ type Resolver interface {
 	GetUser(context.Context, struct{ UserID string }) (*userResolver, error)
 	GetDiary(context.Context, struct{ DiaryID string }) (*diaryResolver, error)
 	CreateDiary(context.Context, struct {
-		Name string
-		Tags []string
+		Name              string
+		TagWithCategories []*model.TagWithCategoryInput
 	}) (*diaryResolver, error)
 	DeleteDiary(context.Context, struct{ DiaryID string }) (bool, error)
 	PostArticle(context.Context, struct{ DiaryID, Title, Content string }) (*articleResolver, error)
@@ -26,6 +26,7 @@ type Resolver interface {
 		Page    int32
 	}) (*articlesWithPageInfoResolver, error)
 	ListRecommededDiaries(context.Context, struct{ DiaryID string }) ([]*diaryResolver, error)
+	ListCategories(context.Context) ([]*categoryResolver, error)
 }
 
 func newResolver(app service.DiaryApp) Resolver {
@@ -85,14 +86,14 @@ func (r *resolver) GetDiary(ctx context.Context, args struct{ DiaryID string }) 
 }
 
 func (r *resolver) CreateDiary(ctx context.Context, args struct {
-	Name string
-	Tags []string
+	Name              string
+	TagWithCategories []*model.TagWithCategoryInput
 }) (*diaryResolver, error) {
 	user := currentUser(ctx)
 	if user == nil {
 		return nil, errors.New("user not found")
 	}
-	diary, err := r.app.CreateNewDiary(user.ID, args.Name, args.Tags)
+	diary, err := r.app.CreateNewDiary(user.ID, args.Name, model.ConvertFromInput(args.TagWithCategories))
 	if err != nil {
 		return nil, err
 	}
@@ -208,4 +209,13 @@ func (r *resolver) ListRecommededDiaries(ctx context.Context, args struct{ Diary
 		drs[i] = &diaryResolver{diary: diary}
 	}
 	return drs, nil
+}
+
+func (r *resolver) ListCategories(ctx context.Context) ([]*categoryResolver, error) {
+	categories := r.app.ListCategories()
+	crs := make([]*categoryResolver, len(categories))
+	for i, c := range categories {
+		crs[i] = &categoryResolver{category: c}
+	}
+	return crs, nil
 }

@@ -5,47 +5,29 @@ import (
 	"errors"
 	"time"
 
+	"github.com/hatena/go-Intern-Diary/instance"
 	"github.com/hatena/go-Intern-Diary/model"
 	"github.com/jmoiron/sqlx"
 )
 
 var diaryNotFoundError = model.NotFoundError("diary")
 
-func (r *repository) CreateNewDiary(userID uint64, name string, tags []string) (*model.Diary, error) { // Todo transaction and rollback
-	now := time.Now()
-	storedTagMap, err := r.getTagIDsByNames(tags)
-	if err != nil {
-		return nil, err
-	}
-	newTags := r.newTagFilter(tags, storedTagMap)
-	newTagIds, err := r.insertNewTags(newTags, now)
-	if err != nil {
-		return nil, err
-	}
-	tagIds := append(values(storedTagMap), newTagIds...)
+const DEFAULT_CATEGORY_ID = uint64(0)
 
-	newDiary, err := r.createNewDiary(userID, name, now)
+func (r *repository) CreateNewDiary(userID uint64, name string, tagWithCategories []*model.TagWithCategory) (*model.Diary, error) { // Todo transaction and rollback
+	now := time.Now()
+	newDiary, err := r.insertDiary(userID, name, now)
 	if err != nil {
 		return nil, err
 	}
-	err = r.insertDiaryTags(newDiary.ID, tagIds, now)
+	err = r.insertDiaryTags(newDiary.ID, tagWithCategories, now)
 	if err != nil {
 		return nil, err
 	}
 	return newDiary, nil
 }
 
-func (r *repository) newTagFilter(tags []string, storedTagMap map[string]uint64) []string {
-	newTags := make([]string, 0, len(tags))
-	for _, tagName := range tags {
-		if _, ok := storedTagMap[tagName]; !ok {
-			newTags = append(newTags, tagName)
-		}
-	}
-	return newTags
-}
-
-func (r *repository) createNewDiary(userID uint64, name string, now time.Time) (*model.Diary, error) {
+func (r *repository) insertDiary(userID uint64, name string, now time.Time) (*model.Diary, error) {
 	id, err := r.generateID()
 	if err != nil {
 		return nil, err
@@ -60,6 +42,72 @@ func (r *repository) createNewDiary(userID uint64, name string, now time.Time) (
 		return nil, err
 	}
 	return &model.Diary{ID: id, Name: name, UserID: userID, UpdatedAt: now}, nil
+}
+
+func (r *repository) insertDiaryTags(diaryId uint64, tagWithCategories []*model.TagWithCategory, now time.Time) error {
+	for _, tagWithCategory := range tagWithCategories {
+		tagId, err := r.generateID()
+		if err != nil {
+			return err
+		}
+		_, err = r.db.Exec(
+			`INSERT INTO tag
+				(id, tag_name, category_id, created_at, updated_at)
+				VALUES
+				(?, ?, ?, ?, ?)
+			`, tagId, tagWithCategory.TagName, tagWithCategory.CategoryID, now, now,
+		)
+		if err != nil {
+			return err
+		}
+		id, err := r.generateID()
+		if err != nil {
+			return err
+		}
+		_, err = r.db.Exec(
+			`INSERT INTO diary_tag
+			(id, diary_id, tag_id, updated_at, created_at)
+			VALUES
+			(?, ?, ?, ?, ?)
+		`, id, diaryId, tagId, now, now,
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *repository) insertNewTags(newTagNames []string, now time.Time) ([]uint64, error) {
+	ids := make([]uint64, len(newTagNames))
+	for i, newTagName := range newTagNames {
+		id, err := r.generateID()
+		if err != nil {
+			return []uint64{}, err
+		}
+		_, err = r.db.Exec(
+			`INSERT INTO tag
+			(id, tag_name, category_id, updated_at, created_at)
+			VALUES
+			(?, ?, ?, ?, ?)
+		`, id, newTagName, DEFAULT_CATEGORY_ID, now, now,
+		)
+		if err != nil {
+			return []uint64{}, err
+		}
+		ids[i] = id
+	}
+	return ids, nil
+}
+
+func (r *repository) newTagFilter(tags []string, storedTagMap map[string]uint64) []string {
+	newTags := make([]string, 0, len(tags))
+	for _, tagName := range tags {
+		if _, ok := storedTagMap[tagName]; !ok {
+			newTags = append(newTags, tagName)
+		}
+	}
+	return newTags
 }
 
 func (r *repository) getTagIDsByNames(tagNames []string) (map[string]uint64, error) {
@@ -92,110 +140,6 @@ func (r *repository) getTagIDsByNames(tagNames []string) (map[string]uint64, err
 		tags[tag.tagName] = tag.id
 	}
 	return tags, nil
-}
-
-const DEFAULT_CATEGORY_ID = uint64(0)
-
-func (r *repository) insertNewTags(newTagNames []string, now time.Time) ([]uint64, error) {
-	// type Tag struct { // バルクインサートできない　https://github.com/jmoiron/sqlx/pull/285
-	// 	id          uint64
-	// 	tag_name    string
-	// 	category_id uint64
-	// 	updated_at  time.Time
-	// 	created_at  time.Time
-	// }
-	// newTags := make([]*Tag, len(newTagNames))
-	// for i, tagName := range newTagNames {
-	// 	id, err := r.generateID()
-	// 	if err != nil {
-	// 		return []uint64{}, err
-	// 	}
-	// 	newTags[i] = &Tag{
-	// 		id:          id,
-	// 		tag_name:    tagName,
-	// 		category_id: uint64(0), // Todo
-	// 		updated_at:  now,
-	// 		created_at:  now,
-	// 	}
-	// }
-	// _, err := r.db.NamedExec(
-	// 	`INSERT INTO tag
-	// 		(id, tag_name, category_id, updated_at, created_at)
-	// 		VALUES
-	// 		(:id, :tag_name, :category_id, :updated_at, :created_at)
-	// 	`, newTags,
-	// )
-	// ids := make([]uint64, len(newTags))
-	// for i, newTag := range newTags {
-	// 	ids[i] = newTag.id
-	// }
-	ids := make([]uint64, len(newTagNames))
-	for i, newTagName := range newTagNames {
-		id, err := r.generateID()
-		if err != nil {
-			return []uint64{}, err
-		}
-		_, err = r.db.Exec(
-			`INSERT INTO tag
-			(id, tag_name, category_id, updated_at, created_at)
-			VALUES
-			(?, ?, ?, ?, ?)
-		`, id, newTagName, DEFAULT_CATEGORY_ID, now, now,
-		)
-		if err != nil {
-			return []uint64{}, err
-		}
-		ids[i] = id
-	}
-	return ids, nil
-}
-
-func (r *repository) insertDiaryTags(diaryId uint64, tagIds []uint64, now time.Time) error {
-	// type DiaryTag struct { // 同じくバルクインサートしたい
-	// 	id         uint64
-	// 	diary_id   uint64
-	// 	tag_id     uint64
-	// 	updated_at time.Time
-	// 	created_at time.Time
-	// }
-	// newDiaryTags := make([]*DiaryTag, len(tagIds))
-	// for i, tagId := range tagIds {
-	// 	id, err := r.generateID()
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	newDiaryTags[i] = &DiaryTag{
-	// 		id:         id,
-	// 		diary_id:   diaryId,
-	// 		tag_id:     tagId,
-	// 		updated_at: now,
-	// 		created_at: now,
-	// 	}
-	// }
-	// _, err := r.db.NamedExec(
-	// 	`INSERT INTO diary_tag
-	// 		(id, diary_id, tag_id, updated_at, created_at)
-	// 		VALUES
-	// 		(:id, :diary_id, :tag_id, :updated_at, :created_at)
-	// 	`, newDiaryTags,
-	// )
-	for _, tagId := range tagIds {
-		id, err := r.generateID()
-		if err != nil {
-			return err
-		}
-		_, err = r.db.Exec(
-			`INSERT INTO diary_tag
-			(id, diary_id, tag_id, updated_at, created_at)
-			VALUES
-			(?, ?, ?, ?, ?)
-		`, id, diaryId, tagId, now, now,
-		)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (r *repository) ListDiariesByUserID(userID uint64, limit, offset uint64) ([]*model.Diary, error) {
@@ -382,4 +326,8 @@ func (r *repository) validateUserForDiaryMutation(diaryID, userID uint64) error 
 		return errors.New("Unauthorized")
 	}
 	return nil
+}
+
+func (r *repository) ListCategories() []*model.Category {
+	return instance.GetInstance()
 }

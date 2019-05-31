@@ -7,7 +7,6 @@ import { GetVisitor } from "../UserTop/__generated__/GetVisitor";
 
 import { query as getVisitorQuery } from "../UserTop/container"
 import { CreateDiaryForm } from "./addDiary";
-import { triggerAsyncId } from "async_hooks";
 import { AddTagForm } from "./addTagForm";
 
 const createDiaryFragment = gql`
@@ -17,14 +16,32 @@ const createDiaryFragment = gql`
     }
 `;
 
+const listCategoriesFragment = gql`
+    fragment ListCategoriesFragment on Category {
+        id
+        category_name
+    }
+`
+
 export const mutation = gql`
-    mutation CreateDiary($name: String!, $tags: [String!]!) {
-        createDiary(name: $name, tags: $tags) {
+    mutation CreateDiary($name: String!, $tagWithCategories: [TagWithCategoryInput!]!) {
+        createDiary(name: $name, tagWithCategories: $tagWithCategories) {
             ...createDiaryFragment
         }
     }
     ${createDiaryFragment}
 `
+
+export const listCategoriesQuery = gql`
+    query ListCategories {
+        listCategories {
+            ...ListCategoriesFragment
+        }
+    }
+    ${listCategoriesFragment}
+`
+
+
 
 export const createUpdateDiary: MutationUpdaterFn<CreateDiary> = (cache, result) => {
     const { data } = result;
@@ -48,11 +65,18 @@ interface DiaryFormProps {
 interface DiaryFormState {
     name: string;
     tagName: string;
+    selectedCategory?: Category;
     tags: Tag[];
 }
 
 export type Tag = {
-    name: string
+    name: string;
+    category: Category;
+}
+
+export type Category = {
+    id: number;
+    name: string;
 }
 
 export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps, DiaryFormState> {
@@ -63,6 +87,7 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
         this.state = {
             name: "",
             tagName: "",
+            selectedCategory: undefined,
             tags: tags,
         }
 
@@ -77,9 +102,16 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
 
     private handleSubmit = (create: () => void) => (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        
+        if (this.state.name == "") {
+            alert("日記の名前を入力してください")
+            return 
+        }
+
         create()
         const tags: Tag[] = []
         this.setState({
+            selectedCategory: undefined,
             name: "",
             tagName: "",
             tags: tags
@@ -96,9 +128,21 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
 
     private handleTagSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const newTag: Tag = { name: this.state.tagName }
+
+        if (this.state.selectedCategory == undefined) {
+            alert("カテゴリーが選択されていません")
+            return 
+        }
+
+        if (this.state.tagName== "") {
+            alert("タグが入力されていません")
+            return 
+        }
+
+        const newTag: Tag = { name: this.state.tagName , category: this.state.selectedCategory}
         const updatedTags = [newTag].concat(this.state.tags)
         this.setState({
+            selectedCategory: undefined,
             tags: updatedTags,
             tagName: "",
         })
@@ -109,6 +153,13 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
         this.setState({
             tags: newTags
         })
+    }
+
+    private handleCategorySelectButton = (categories: Category[], selectedCategoryId: number) => () => {
+        const selectedCategory = categories.filter(category => category.id == selectedCategoryId)[0]
+        this.setState({
+            selectedCategory: selectedCategory
+        })   
     }
 
     render() {
@@ -126,6 +177,8 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
                     handleDeleteButton={this.handleDeleteButton}
                     handleTagInput={this.handleTagInput}
                     handleTagSubmit={this.handleTagSubmit}
+                    handleCategorySelectButton={this.handleCategorySelectButton}
+                    selectedCategory={this.state.selectedCategory}
                 />
             </div>
         )

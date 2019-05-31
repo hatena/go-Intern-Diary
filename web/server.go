@@ -267,7 +267,7 @@ func (s *server) addDiaryHandler() http.Handler {
 			return
 		}
 		name := r.FormValue("name")
-		if _, err := s.app.CreateNewDiary(user.ID, name, []string{}); err != nil {
+		if _, err := s.app.CreateNewDiary(user.ID, name, []*model.TagWithCategory{}); err != nil {
 			http.Error(w, "failed to create diary", http.StatusBadRequest)
 			return
 		}

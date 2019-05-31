@@ -4,14 +4,16 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: PageInfoFragment
+// GraphQL query operation: ListCategories
 // ====================================================
 
-export interface PageInfoFragment {
-  totalPage: number;
-  currentPage: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+export interface ListCategories_listCategories {
+  id: number;
+  category_name: string;
+}
+
+export interface ListCategories {
+  listCategories: ListCategories_listCategories[];
 }
 
 /* tslint:disable */

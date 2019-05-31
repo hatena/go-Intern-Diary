@@ -1,6 +1,6 @@
 import React from "react"
 import {Mutation} from "react-apollo"
-import { CreateDiary, CreateDiaryVariables } from "./__generated__/CreateDiary"
+import { CreateDiary, CreateDiaryVariables, TagWithCategoryInput} from "./__generated__/CreateDiary"
 import { mutation as createDiary } from "../AddDiaryForm/container"
 import { createUpdateDiary} from "./container"
 import {Tag} from "./container"
@@ -16,9 +16,9 @@ export const CreateDiaryForm: React.StatelessComponent<CreateDiaryFormProps> = (
     return (
         <Mutation<CreateDiary, CreateDiaryVariables> mutation={createDiary}>
             {(create) => {
-                const tagNames = tags.map(tag => tag.name)
+                const tagsWithCategoryInput: TagWithCategoryInput[] = tags.map(tag => ({tag_name: tag.name,  category_id: tag.category.id}))
                 return (
-                    <form className="CreateDiaryForm" onSubmit={handleSubmit(() => create({ variables: {name: name, tags: tagNames}, update: createUpdateDiary}))}>
+                    <form className="CreateDiaryForm" onSubmit={handleSubmit(() => create({ variables: {name: name, tagWithCategories: tagsWithCategoryInput}, update: createUpdateDiary}))}>
                         <div>
                             <label>Diary Name:
                                 <input type="TEXT" name="name" value={name} onChange={handleInput} />
