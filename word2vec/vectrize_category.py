@@ -130,6 +130,6 @@ vector = {}
 for k, v in main_categories.items():
     vector[k] = model.get_vector(v)
 
-with open('./category_vectors', mode='wb') as f:
+with open('./category_vectors.pickle', mode='wb') as f:
     pickle.dump(vector, f)
 
