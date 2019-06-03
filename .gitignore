@@ -7,3 +7,4 @@
 
 word2vec/model/
 *.pyc
+*.pickle

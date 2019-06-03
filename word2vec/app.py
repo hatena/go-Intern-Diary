@@ -12,11 +12,11 @@ mecacb = MeCab.Tagger("-Ochasen")
 model_dir = './model/entity_vector/entity_vector.model.bin'
 model = KeyedVectors.load_word2vec_format(model_dir, binary=True)
 
-with open('./category_vectors', mode='rb') as f:
+with open('./category_vectors.pickle', mode='rb') as f:
   category_vactors = pickle.load(f)
 
 
-@app.route('/')
+@app.route('/categorize')
 def index():
   return jsonify({
     "message": "テスト!!"
