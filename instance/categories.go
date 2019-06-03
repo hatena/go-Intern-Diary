@@ -12,7 +12,7 @@ var categoiresInstance = []*model.Category{
 	&model.Category{3, "Sports"},
 	&model.Category{4, "Games"},
 
-	&model.Category{5, "Anmation And Comics"},
+	&model.Category{5, "Ainmation And Comics"},
 	&model.Category{6, "Hobbies"},
 	&model.Category{7, "Computers"},
 

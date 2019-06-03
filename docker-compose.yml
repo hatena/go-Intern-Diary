@@ -37,6 +37,16 @@ services:
       - ./static:/app/static/
       - yarn-cache:/usr/local/share/.cache/yarn/v1
       - node_modules:/app/node_modules
+  flask:
+    build: ./word2vec
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./word2vec:/word2vec
+    tty: true
+    environment:
+      TZ: Asia/Tokyo
+    command: flask run --host 0.0.0.0 --port 5000
 volumes:
   yarn-cache:
   node_modules:
