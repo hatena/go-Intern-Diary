@@ -50,15 +50,28 @@ func (r *repository) insertDiaryTags(diaryId uint64, tagWithCategories []*model.
 		if err != nil {
 			return err
 		}
-		_, err = r.db.Exec(
-			`INSERT INTO tag
-				(id, tag_name, category_id, created_at, updated_at)
-				VALUES
-				(?, ?, ?, ?, ?)
-			`, tagId, tagWithCategory.TagName, tagWithCategory.CategoryID, now, now,
-		)
-		if err != nil {
-			return err
+		if len(tagWithCategory.CategoryIDs) > 0 {
+			_, err = r.db.Exec(
+				`INSERT INTO tag
+					(id, tag_name, category_id, created_at, updated_at)
+					VALUES
+					(?, ?, ?, ?, ?)
+				`, tagId, tagWithCategory.TagName, tagWithCategory.CategoryIDs[0], now, now,
+			)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = r.db.Exec(
+				`INSERT INTO tag
+					(id, tag_name, created_at, updated_at)
+					VALUES
+					(?, ?, ?, ?)
+				`, tagId, tagWithCategory.TagName, now, now,
+			)
+			if err != nil {
+				return err
+			}
 		}
 		id, err := r.generateID()
 		if err != nil {

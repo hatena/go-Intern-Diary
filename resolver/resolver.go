@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/hatena/go-Intern-Diary/api"
 	"github.com/hatena/go-Intern-Diary/model"
 	"github.com/hatena/go-Intern-Diary/service"
 )
@@ -93,7 +94,12 @@ func (r *resolver) CreateDiary(ctx context.Context, args struct {
 	if user == nil {
 		return nil, errors.New("user not found")
 	}
-	diary, err := r.app.CreateNewDiary(user.ID, args.Name, model.ConvertFromInput(args.TagWithCategories))
+	tag_names := model.GetTagNamesFromInput(args.TagWithCategories)
+	tagWithCategories, err := api.GetCategoriesApi(tag_names)
+	if err != nil {
+		return nil, err
+	}
+	diary, err := r.app.CreateNewDiary(user.ID, args.Name, model.ConvertFromInput(tagWithCategories))
 	if err != nil {
 		return nil, err
 	}

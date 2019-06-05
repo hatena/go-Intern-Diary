@@ -84,10 +84,11 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
     constructor(props: DiaryFormProps) {
         super(props)
         const tags: Tag[] = []
+        const dummyCategoy: Category = {id: 0, name: "dummy"}
         this.state = {
             name: "",
             tagName: "",
-            selectedCategory: undefined,
+            selectedCategory: dummyCategoy,
             tags: tags,
         }
 
@@ -111,7 +112,7 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
         create()
         const tags: Tag[] = []
         this.setState({
-            selectedCategory: undefined,
+            // selectedCategory: undefined,
             name: "",
             tagName: "",
             tags: tags
@@ -142,7 +143,7 @@ export class CreateDiaryFormContainer extends React.PureComponent<DiaryFormProps
         const newTag: Tag = { name: this.state.tagName , category: this.state.selectedCategory}
         const updatedTags = [newTag].concat(this.state.tags)
         this.setState({
-            selectedCategory: undefined,
+            // selectedCategory: undefined,
             tags: updatedTags,
             tagName: "",
         })

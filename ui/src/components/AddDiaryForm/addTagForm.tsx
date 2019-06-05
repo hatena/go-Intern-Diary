@@ -52,7 +52,7 @@ export const AddTagForm: React.StatelessComponent<AddTagFormProps> =
                                     <input type="TEXT" name="name" value={tagName} onChange={handleTagInput} />
                                 </label>
                             </div>
-                            <div>choose category for this tag: 
+                            {/* <div>choose category for this tag: 
                                 <div>
                                     {categories.map( category => (
                                         <label　key={category.id}>
@@ -63,7 +63,7 @@ export const AddTagForm: React.StatelessComponent<AddTagFormProps> =
                                         </label>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
                             <div>
                                 <button>Add Tag</button>
                             </div>
