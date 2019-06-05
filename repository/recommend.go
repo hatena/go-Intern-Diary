@@ -10,7 +10,7 @@ import (
 const RECOMMEND_LINIT_COUNT = 3
 
 func (r *repository) ListRecommendedDiaries(diaryID uint64) ([]*model.Diary, error) {
-	tagsOfDiary, err := r.getTags(diaryID)
+	tagsOfDiary, err := r.getNoNullTags(diaryID)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (r *repository) unionCategory(tags []*model.Tag, diaryID uint64) ([]*model.
 			JOIN tag ON tag.id = diary_tag.tag_id 
 			JOIN user ON diary.user_id = user.id 
 			WHERE tag.category_id IN (?) 
-				AND diary.id != ? 
+				AND diary.id != ?
 			GROUP BY diary.id
 			ORDER BY count DESC, updated_at LIMIT ?
 		`, categoryIDs, diaryID, RECOMMEND_LINIT_COUNT,

@@ -4,7 +4,7 @@ import MeCab
 from gensim.models import KeyedVectors
 import pickle
 from classifier import tokenize, includeWordList, categorize
-from category import main_categories_ja
+from category import sub_categories_ja
 
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -16,7 +16,7 @@ model_dir = './model/entity_vector/entity_vector.model.bin'
 logging.info("...load word2vec model")
 model = KeyedVectors.load_word2vec_format(model_dir, binary=True)
 
-with open('./main_categories_ja.pickle', mode='rb') as f:
+with open('./sub_categories_ja.pickle', mode='rb') as f:
   category_vectors = pickle.load(f)
 
 category_ids = list(category_vectors.keys())
@@ -36,7 +36,7 @@ def get():
     categoryResults = [categorize(model, category_ids, vectors, norn) for norn in nornlist]
     tag_category_ids["categoryIds"] = categoryResults
     logging.info("########## categorize result #############") 
-    logging.info("categorize result: {}".format([main_categories_ja[i] for i in categoryResults if i != None]))
+    logging.info("categorize result: {}".format([sub_categories_ja[i] for i in categoryResults if i != None]))
     tag_category_ids_list.append(tag_category_ids)
    
   return jsonify(tag_category_ids_list)

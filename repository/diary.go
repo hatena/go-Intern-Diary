@@ -280,9 +280,9 @@ func (r *repository) ListDiariesByTagIDs(tagIDs []uint64) (map[uint64][]*model.D
 	return diaries, nil
 }
 
-func (r *repository) getTags(diaryID uint64) ([]*model.Tag, error) {
-	var tagsOfDiary []*model.Tag
-	err := r.db.Select(&tagsOfDiary, `
+func (r *repository) getNoNullTags(diaryID uint64) ([]*model.Tag, error) {
+	var rec []*model.TagRecord
+	err := r.db.Select(&rec, `
 		SELECT tag.id, tag_name, category_id FROM tag
 			JOIN diary_tag ON tag.id = diary_tag.tag_id
 			WHERE diary_id = ?
@@ -290,6 +290,16 @@ func (r *repository) getTags(diaryID uint64) ([]*model.Tag, error) {
 	)
 	if err != nil {
 		return nil, err
+	}
+	var tagsOfDiary []*model.Tag
+	for _, tag := range rec {
+		if tag.CategoryID.Valid == true {
+			tagsOfDiary = append(tagsOfDiary, &model.Tag{
+				ID:         tag.ID,
+				TagName:    tag.TagName,
+				CategoryID: int(tag.CategoryID.Int64),
+			})
+		}
 	}
 	return tagsOfDiary, nil
 }
