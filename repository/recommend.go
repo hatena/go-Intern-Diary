@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/hatena/go-Intern-Diary/model"
@@ -61,8 +62,8 @@ func (r *repository) unionCategory(tags []*model.Tag, diaryID uint64) ([]*model.
 			WHERE tag.category_id IN (?) 
 				AND diary.id != ?
 			GROUP BY diary.id
-			ORDER BY count DESC, updated_at LIMIT ?
-		`, categoryIDs, diaryID, RECOMMEND_LINIT_COUNT,
+			ORDER BY count DESC, updated_at LIMIT 15
+		`, categoryIDs, diaryID,
 	)
 	if err != nil {
 		return nil, err
@@ -74,7 +75,9 @@ func (r *repository) unionCategory(tags []*model.Tag, diaryID uint64) ([]*model.
 		return nil, err
 	}
 	diaries := getDiaries(rec)
-	return diaries, err
+	shuffle(diaries)
+
+	return secureSlice(diaries, RECOMMEND_LINIT_COUNT), err
 }
 
 type record struct {
@@ -96,4 +99,27 @@ func getDiaries(records []*record) []*model.Diary {
 		}
 	}
 	return diaries
+}
+
+func shuffle(data []*model.Diary) {
+	n := len(data)
+	for i := n - 1; i >= 0; i-- {
+		j := rand.Intn(i + 1)
+		data[i], data[j] = data[j], data[i]
+	}
+}
+
+func secureSlice(data []*model.Diary, n int) []*model.Diary {
+	var length int
+	l := len(data)
+	if n > l {
+		length = l
+	} else {
+		length = n
+	}
+	slice := make([]*model.Diary, length)
+	for i := 0; i < length; i++ {
+		slice[i] = data[i]
+	}
+	return slice
 }
